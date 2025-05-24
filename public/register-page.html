@@ -44,7 +44,7 @@
         <div class="col pb-3 pt-5 px-5 mx-5">
           <h1 class="pb-2">REGISTER</h1>
           <div class="p-3 border border-dark">
-            <form>
+            <form id="registerForm">
               <div class="row">
                 <div class="col">
                   <div class="mb-3">
@@ -164,10 +164,14 @@
                 </div>
               </div>
               <div class="text-center mb-3 mt-5">
+                <div>
+                  <p id="errorMessages" class="text-danger text-start"></p>
+                </div>
                 <button
                   type="submit"
                   class="btn btn-primary px-4 rounded-pill text-black fw-bold border-0"
                   style="background-color: #cff3d7"
+                  id="registerButton"
                 >
                   REGISTER
                 </button>
@@ -182,5 +186,6 @@
       integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO"
       crossorigin="anonymous"
     ></script>
+    <script src="./scripts/register-validation.js"></script>
   </body>
 </html>
