@@ -16,7 +16,7 @@
 </head>
 
 <body>
-  <?php include_once "./includes/partials/header.php" ?>
+  <?php include_once "../includes/partials/header.php" ?>
   <main class="container p-3 mb-2 mt-5">
     <div class="row">
       <div class="col text-center pb-3 pt-5 px-5 mx-5">
@@ -35,7 +35,7 @@
             type="submit"
             class="btn btn-primary px-4 rounded-pill text-black fw-bold border-0"
             style="background-color: #cff3d7"
-            onclick="window.location.href='./login-page.html';">
+            onclick="window.location.href='./login.php';">
             LOG IN
           </button>
         </div>
@@ -47,77 +47,104 @@
             <div class="row">
               <div class="col">
                 <div class="mb-3">
-                  <label for="exampleInputEmail1" class="form-label">
+                  <label for="firstInput" class="form-label">
                     First Name<span class="text-danger">*</span>
                   </label>
                   <input
                     type="text"
                     class="form-control rounded-0 border-dark"
-                    id="firstInput" />
+                    id="firstInput"
+                    name="firstInput"
+                    aria-describedby="firstNameHelp">
                 </div>
               </div>
               <div class="col">
                 <div class="mb-3">
-                  <label for="exampleInputEmail1" class="form-label">
+                  <label for="lastInput" class="form-label">
                     Last Name<span class="text-danger">*</span>
                   </label>
                   <input
                     type="text"
                     class="form-control rounded-0 border-dark"
-                    id="lastInput" />
+                    id="lastInput"
+                    name="lastInput"
+                    aria-describedby="lastNameHelp">
                 </div>
               </div>
             </div>
+
             <div class="mb-3">
-              <label for="exampleInputEmail1" class="form-label">
+              <label for="emailInput" class="form-label">
                 Email address<span class="text-danger">*</span>
               </label>
               <input
                 type="email"
                 class="form-control rounded-0 border-dark"
-                id="emailInput" />
+                id="emailInput"
+                name="emailInput"
+                aria-describedby="emailHelp">
             </div>
+
             <div class="mb-3">
-              <label for="exampleInputPassword1" class="form-label">Password<span class="text-danger">*</span></label>
+              <label for="passwordInput" class="form-label">
+                Password<span class="text-danger">*</span>
+              </label>
               <input
                 type="password"
                 class="form-control rounded-0 border-dark"
-                id="passwordInput" />
+                id="passwordInput"
+                name="passwordInput"
+                aria-describedby="passwordHelp">
             </div>
+
             <div class="mb-3">
-              <label for="exampleInputPassword1" class="form-label">Confirm Password<span class="text-danger">*</span></label>
+              <label for="confirmInput" class="form-label">
+                Confirm Password<span class="text-danger">*</span>
+              </label>
               <input
                 type="password"
                 class="form-control rounded-0 border-dark"
-                id="confirmInput" />
+                id="confirmInput"
+                name="confirmInput"
+                aria-describedby="confirmHelp">
             </div>
+
             <div class="mb-3">
-              <label for="exampleInputEmail1" class="form-label">
+              <label for="streetInput" class="form-label">
                 Street Address<span class="text-danger">*</span>
               </label>
               <input
                 type="text"
                 class="form-control rounded-0 border-dark"
-                id="streetInput" />
+                id="streetInput"
+                name="streetInput"
+                aria-describedby="streetHelp">
             </div>
+
             <div class="mb-3">
-              <label for="exampleInputEmail1" class="form-label">
+              <label for="cityInput" class="form-label">
                 City<span class="text-danger">*</span>
               </label>
               <input
                 type="text"
                 class="form-control rounded-0 border-dark"
-                id="cityInput" />
+                id="cityInput"
+                name="cityInput"
+                aria-describedby="cityHelp">
             </div>
+
             <div class="mb-3">
-              <label for="exampleInputEmail1" class="form-label">
+              <label for="statesInput" class="form-label">
                 State/Province/Region<span class="text-danger">*</span>
               </label>
               <input
                 type="text"
                 class="form-control rounded-0 border-dark"
-                id="statesInput" />
+                id="statesInput"
+                name="statesInput"
+                aria-describedby="stateHelp">
             </div>
+
             <div class="row">
               <div class="col">
                 <div class="mb-3">
@@ -127,31 +154,32 @@
                   <select
                     class="form-select rounded-0 border-dark"
                     id="countrySelect"
+                    name="countrySelect"
                     aria-describedby="countryHelp">
-                    <option selected disabled>Select a country</option>
+                    <option value="">Select a country</option>
                     <option value="us">United States</option>
                     <option value="ca">Canada</option>
                     <option value="uk">United Kingdom</option>
-                    <!-- add more countries -->
+                    <!-- Add more countries as needed -->
                   </select>
                 </div>
               </div>
               <div class="col">
                 <div class="mb-3">
-                  <label for="exampleInputEmail1" class="form-label">
+                  <label for="zipCode" class="form-label">
                     Zip Code<span class="text-danger">*</span>
                   </label>
                   <input
                     type="text"
                     class="form-control rounded-0 border-dark"
-                    id="zipCode" />
+                    id="zipCode"
+                    name="zipCode"
+                    aria-describedby="zipHelp">
                 </div>
               </div>
             </div>
+
             <div class="text-center mb-3 mt-5">
-              <div>
-                <p id="errorMessages" class="text-danger text-start"></p>
-              </div>
               <button
                 type="submit"
                 class="btn btn-primary px-4 rounded-pill text-black fw-bold border-0"
@@ -169,7 +197,10 @@
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO"
     crossorigin="anonymous"></script>
-  <script src="./scripts/register-validation.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/additional-methods.min.js"></script>
+  <script src="./js/validation/register-form.js"></script>
 </body>
 
 </html>
