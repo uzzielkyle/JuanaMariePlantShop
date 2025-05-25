@@ -1,6 +1,21 @@
+<?php
+// Dynamically get the protocol (http or https)
+$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https://" : "http://";
+
+// Dynamically get the host and the base path
+$host = $_SERVER['HTTP_HOST'];
+
+// Project base folder name
+$base = "/JuanaMariePlantShop"; // Change if your root folder name differs
+
+// Final base URL
+$base_url = $protocol . $host . $base;
+?>
+
+
 <header class="navbar navbar-expand-lg bg-white px-4 py-2 border-bottom fixed-top">
   <a class="navbar-brand d-flex align-items-center me-5" href="#">
-    <img src="./assets/logo.svg" alt="Logo" style="height: 40px;">
+    <img src="<?= $base_url ?>/public/assets/logo.svg" alt="Logo" style="height: 40px;">
   </a>
 
   <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
