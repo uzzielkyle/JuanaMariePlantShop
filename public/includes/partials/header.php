@@ -14,7 +14,7 @@ $base_url = $protocol . $host . $base;
 
 
 <header class="navbar navbar-expand-lg bg-white px-4 py-2 border-bottom fixed-top">
-  <a class="navbar-brand d-flex align-items-center me-5" href="#">
+  <a class="navbar-brand d-flex align-items-center me-5" href="<?= $base_url ?>/">
     <img src="<?= $base_url ?>/assets/logo.svg" alt="Logo" style="height: 40px;">
   </a>
 
