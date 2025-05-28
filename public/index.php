@@ -41,7 +41,7 @@
             <div class="row g-4">
                 <?php foreach ($indoorHerbs as $herb): ?>
                     <div class="col-12 col-sm-6 col-lg-3">
-                        <div class="card h-100 shadow-sm border-0 text-center">
+                        <div class="card h-100 border border-dark rounded-0 text-center">
                             <img src="https://via.placeholder.com/300x200?text=<?= urlencode($herb) ?>" class="card-img-top" alt="<?= $herb ?>">
                             <div class="card-body">
                                 <h5 class="card-title fw-bold"><?= $herb ?></h5>
@@ -57,7 +57,7 @@
             <div class="row g-4">
                 <?php foreach ($gardenHerbs as $herb): ?>
                     <div class="col-12 col-sm-6 col-lg-3">
-                        <div class="card h-100 shadow-sm border-0 text-center">
+                        <div class="card h-100 border border-dark rounded-0  text-center">
                             <img src="https://via.placeholder.com/300x200?text=<?= urlencode($herb) ?>" class="card-img-top" alt="<?= $herb ?>">
                             <div class="card-body">
                                 <h5 class="card-title fw-bold"><?= $herb ?></h5>
