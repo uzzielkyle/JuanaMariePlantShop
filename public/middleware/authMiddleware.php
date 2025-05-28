@@ -41,12 +41,13 @@ function getBearerToken()
  * @param array $allowed_roles List of allowed roles. Empty array means any valid token allowed.
  * @return object Decoded JWT payload
  */
-function authenticate(array $allowed_roles = [])
+function authenticate(array $allowed_roles = [], bool $silent = false)
 {
     global $secret_key;
     $token = getBearerToken();
 
     if (!$token) {
+        if ($silent) return null;
         http_response_code(401);
         echo json_encode(["error" => "Access token not provided"]);
         exit;
@@ -55,9 +56,9 @@ function authenticate(array $allowed_roles = [])
     try {
         $decoded = JWT::decode($token, new Key($secret_key, 'HS256'));
 
-        // Role check if roles specified
         if (!empty($allowed_roles)) {
             if (!isset($decoded->role) || !in_array($decoded->role, $allowed_roles)) {
+                if ($silent) return null;
                 http_response_code(403);
                 echo json_encode(["error" => "Access forbidden: insufficient permissions"]);
                 exit;
@@ -66,6 +67,7 @@ function authenticate(array $allowed_roles = [])
 
         return $decoded;
     } catch (Exception $e) {
+        if ($silent) return null;
         http_response_code(401);
         echo json_encode(["error" => "Invalid token: " . $e->getMessage()]);
         exit;
