@@ -133,7 +133,7 @@
 
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="js/cart-function.js"></script>
-
+  <script src="../js/dynamic-nav.js"></script>
 </body>
 
 </html>
