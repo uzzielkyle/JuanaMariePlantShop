@@ -59,8 +59,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // PUT update user
-if ($_SERVER['REQUEST_METHOD'] === 'PUT' && isset($_GET['id'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     $data = json_decode(file_get_contents("php://input"), true);
+
+    if (!isset($data['iduser'])) {
+        respond(['error' => 'Missing user ID'], 400);
+    }
+
     $fields = ['first_name', 'last_name', 'email', 'address', 'telephone'];
     $updates = [];
     $values = [];
@@ -72,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT' && isset($_GET['id'])) {
         }
     }
 
-    if (isset($data['password'])) {
+    if (isset($data['password']) && !empty($data['password'])) {
         $updates[] = "password = ?";
         $values[] = password_hash($data['password'], PASSWORD_DEFAULT);
     }
@@ -81,17 +86,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT' && isset($_GET['id'])) {
         respond(['error' => 'No fields to update'], 400);
     }
 
-    $values[] = $_GET['id'];
-    $sql = "UPDATE user SET " . implode(', ', $updates) . ", modified_at = NOW() WHERE iduser = ?";
+    $updates[] = "modified_at = NOW()";
+    $values[] = $data['iduser']; // bind at the end
+
+    $sql = "UPDATE user SET " . implode(', ', $updates) . " WHERE iduser = ?";
     $stmt = $pdo->prepare($sql);
     $stmt->execute($values);
+
     respond(['message' => 'User updated']);
 }
 
 // DELETE user
-if ($_SERVER['REQUEST_METHOD'] === 'DELETE' && isset($_GET['id'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
+    $data = json_decode(file_get_contents("php://input"), true);
+    if (!isset($data['id'])) {
+        respond(['error' => 'ID required'], 400);
+    }
+
     $stmt = $pdo->prepare("DELETE FROM user WHERE iduser = ?");
-    $stmt->execute([$_GET['id']]);
+    $stmt->execute([$data['id']]);
     respond(['message' => 'User deleted']);
 }
 
