@@ -4,8 +4,8 @@ require_once '../middleware/authMiddleware.php';
 $auth = authenticate(["user"], true); // get user data from JWT
 
 if (!$auth || $auth->role !== 'user') {
-    header('Location: ../auth/login.php');
-    exit;
+  header('Location: ../auth/login.php');
+  exit;
 }
 ?>
 
@@ -47,25 +47,8 @@ if (!$auth || $auth->role !== 'user') {
                 <th class="" scope="col"></th>
               </tr>
             </thead>
-            <tbody>
-              <?php for ($x = 0; $x < count($items); $x++): ?>
-                <tr>
-                  <td class="text-center">
-                    <input type="checkbox" class="item-check" checked style="transform: scale(1.5);">
-                  </td>
-                  <th><?= $items[$x][0] ?></th>
-                  <td><?= $items[$x][1] ?></td>
-                  <td>
-                    <div class="col-sm-3">
-                      <input type="number" class="form-control quantity" value="<?= $items[$x][2] ?>" min="1" max="99" step="1" data-price="<?= $items[$x][1] ?>">
-                    </div>
-                  </td>
-                  <td class="item-total"><?= $items[$x][1] * $items[$x][2] ?></td>
-                  <td>
-                    <button type="button" class="btn-close" aria-label="Close"></button>
-                  </td>
-                </tr>
-              <?php endfor; ?>
+            <tbody id="cart-table-body">
+
             </tbody>
           </table>
         </div>

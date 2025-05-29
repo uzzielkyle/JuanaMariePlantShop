@@ -15,7 +15,13 @@ $userId = $auth->id;
 
 // GET all cart items for the logged-in user
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && !isset($_GET['id'])) {
-    $stmt = $pdo->prepare("SELECT * FROM cart WHERE `user` = ?");
+    $stmt = $pdo->prepare("
+        SELECT c.idcart, c.user, p.name, p.price, c.quantity
+        FROM cart c
+        INNER JOIN `user` u ON u.iduser = c.user
+        INNER JOIN product p ON p.idproduct = c.product
+        WHERE c.user = ?
+    ");
     $stmt->execute([$userId]);
     echo json_encode($stmt->fetchAll());
     exit;
