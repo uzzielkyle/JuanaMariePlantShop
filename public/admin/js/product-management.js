@@ -3,6 +3,33 @@ $(document).ready(function () {
     const token = localStorage.getItem('token');
     const headers = { Authorization: `Bearer ${token}` };
 
+    function disableAllButtons(clickedBtn) {
+        $('button').prop('disabled', true);
+
+        // Save original content so we can restore later
+        if (!clickedBtn.data('original-html')) {
+            clickedBtn.data('original-html', clickedBtn.html());
+        }
+
+        // Add spinner inside the clicked button
+        clickedBtn.html(
+            `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
+        );
+
+        console.log(clickedBtn)
+    }
+
+    function enableAllButtons(clickedBtn) {
+        $('button').prop('disabled', false);
+
+        // Restore clicked button original content
+        if (clickedBtn && clickedBtn.data('original-html')) {
+            clickedBtn.html(clickedBtn.data('original-html'));
+            clickedBtn.removeData('original-html');
+        }
+    }
+
+
     function showLoading() {
         const container = $('#plantCardContainer');
         container.empty();
@@ -83,7 +110,12 @@ $(document).ready(function () {
 
     // Edit button click - load data & show modal
     $(document).on('click', '.edit-btn', function () {
-        const id = $(this).data('id');
+        const clickedBtn = $(this);
+        const id = clickedBtn.data('id');
+
+        // Disable all buttons and show spinner on this one
+        disableAllButtons(clickedBtn);
+
         $.ajax({
             url: `${apiBase}?id=${id}`,
             method: 'GET',
@@ -100,16 +132,17 @@ $(document).ready(function () {
                 $('#care').val(product.care_guide);
                 $('#propagation').val(product.propagation);
 
-                $('#plantModal').modal('show');  // Show the modal here
+                $('#plantModal').modal('show');
             },
             error: function () {
                 alert('Failed to load plant.');
             },
-            complete: hideLoading
+            complete: function () {
+                enableAllButtons(clickedBtn);
+            }
         });
     });
 
-    // ... existing code ...
 
     let deletePlantId = null; // Store plant id for deletion
 
@@ -144,6 +177,11 @@ $(document).ready(function () {
         submitHandler: function (form) {
             const id = $('#plantId').val();
             const token = localStorage.getItem('token');
+
+            const clickedBtn = $(form).find('button[type=submit]');
+
+            disableAllButtons(clickedBtn);
+
 
             const productData = {
                 name: $('#name').val().trim(),
@@ -189,6 +227,9 @@ $(document).ready(function () {
                         console.error('Update error:', status, error);
                         console.error('Response text:', xhr.responseText);
                         alert('Failed to update plant.');
+                    },
+                    complete: function () {
+                        enableAllButtons(clickedBtn);
                     }
                 });
             }
@@ -207,6 +248,10 @@ $(document).ready(function () {
         if (!deletePlantId) return;
 
         const token = localStorage.getItem('token');
+        const clickedBtn = $(this);
+
+        disableAllButtons(clickedBtn);
+
         $.ajax({
             url: `${apiBase}?id=${deletePlantId}`,
             method: 'DELETE',
@@ -220,6 +265,7 @@ $(document).ready(function () {
             },
             complete: function () {
                 deletePlantId = null;
+                enableAllButtons(clickedBtn);
             }
         });
     });
@@ -260,6 +306,9 @@ $(document).ready(function () {
             $(element).removeClass('is-invalid').addClass('is-valid');
         },
         submitHandler: function (form) {
+            const clickedBtn = $(form).find('button[type=submit]');
+            disableAllButtons(clickedBtn);
+
             const difficultyValue = $('#newDifficulty').val().trim();
             const priceValue = $('#newPrice').val().trim();
 
@@ -310,6 +359,9 @@ $(document).ready(function () {
                         console.error('AJAX error:', status, error);
                         console.error('Response text:', xhr.responseText);
                         alert('Failed to add plant.');
+                    },
+                    complete: function () {
+                        enableAllButtons(clickedBtn);
                     }
                 });
             }
