@@ -15,12 +15,20 @@ if (!$auth || $auth->role !== 'admin') {
     respond(['error' => 'Unauthorized'], 403);
 }
 
-// GET all products (no quantity included)
+// GET all products
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && !isset($_GET['id'])) {
-    $stmt = $pdo->query("SELECT idproduct, name, price, photo, description, history, care_guide, propagation, difficulty, sunlight, watering_schedule FROM product");
+    $stmt = $pdo->query("SELECT idproduct, name, price, quantity, photo, description, history, care_guide, propagation, difficulty, sunlight, watering_schedule FROM product");
     $products = $stmt->fetchAll();
 
     foreach ($products as &$product) {
+        // base64 encode photo blob if present
+        if (!empty($product['photo'])) {
+            $product['photo'] = base64_encode($product['photo']);
+        } else {
+            $product['photo'] = null;
+        }
+
+        // fetch categories
         $stmtCat = $pdo->prepare("SELECT category_idcategory FROM product_has_category WHERE product_idproduct = ?");
         $stmtCat->execute([$product['idproduct']]);
         $product['categories'] = array_column($stmtCat->fetchAll(), 'category_idcategory');
@@ -29,13 +37,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && !isset($_GET['id'])) {
     respond($products);
 }
 
-// GET product by id (no quantity)
+// GET product by id
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
-    $stmt = $pdo->prepare("SELECT idproduct, name, price, photo, description, history, care_guide, propagation, difficulty, sunlight, watering_schedule FROM product WHERE idproduct = ?");
+    $stmt = $pdo->prepare("SELECT idproduct, name, price, quantity, photo, description, history, care_guide, propagation, difficulty, sunlight, watering_schedule FROM product WHERE idproduct = ?");
     $stmt->execute([$_GET['id']]);
     $product = $stmt->fetch();
     if (!$product) {
         respond(['error' => 'Product not found'], 404);
+    }
+
+    // base64 encode photo blob if present
+    if (!empty($product['photo'])) {
+        $product['photo'] = base64_encode($product['photo']);
+    } else {
+        $product['photo'] = null;
     }
 
     $stmtCat = $pdo->prepare("SELECT category_idcategory FROM product_has_category WHERE product_idproduct = ?");
@@ -45,31 +60,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
     respond($product);
 }
 
-// POST create new product (no quantity here)
+// POST create new product
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = json_decode(file_get_contents("php://input"), true);
     $required = ['name', 'price', 'description'];
     foreach ($required as $field) {
-        if (!isset($data[$field])) {
+        if (empty($data[$field])) {
             respond(['error' => "Missing field: $field"], 400);
         }
     }
 
-    $stmt = $pdo->prepare("INSERT INTO product (name, price, photo, description, history, care_guide, propagation, difficulty, sunlight, watering_schedule)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $fields = ['name', 'price', 'quantity', 'photo', 'description', 'history', 'care_guide', 'propagation', 'difficulty', 'sunlight', 'watering_schedule'];
+    $placeholders = [];
+    $values = [];
 
-    $stmt->execute([
-        $data['name'],
-        $data['price'],
-        $data['photo'] ?? null,
-        $data['description'],
-        $data['history'] ?? null,
-        $data['care_guide'] ?? null,
-        $data['propagation'] ?? null,
-        $data['difficulty'] ?? null,
-        $data['sunlight'] ?? null,
-        $data['watering_schedule'] ?? null
-    ]);
+    $data['quantity'] = 0; // default
+
+    foreach ($fields as $field) {
+        if (isset($data[$field])) {
+            $placeholders[] = $field;
+            if ($field === 'photo') {
+                $values[] = base64_decode($data[$field]);
+            } else {
+                $values[] = $data[$field];
+            }
+        }
+    }
+
+    $stmt = $pdo->prepare("INSERT INTO product (" . implode(", ", $placeholders) . ") VALUES (" . rtrim(str_repeat('?, ', count($values)), ', ') . ")");
+    $stmt->execute($values);
 
     $productId = $pdo->lastInsertId();
 
@@ -83,19 +102,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     respond(['message' => 'Product created', 'id' => $productId], 201);
 }
 
-// PUT update product (no quantity)
+// PUT update product
 if ($_SERVER['REQUEST_METHOD'] === 'PUT' && isset($_GET['id'])) {
     $productId = $_GET['id'];
     $data = json_decode(file_get_contents("php://input"), true);
 
-    $fields = ['name', 'price', 'photo', 'description', 'history', 'care_guide', 'propagation', 'difficulty', 'sunlight', 'watering_schedule'];
+    $fields = ['name', 'price', 'quantity', 'photo', 'description', 'history', 'care_guide', 'propagation', 'difficulty', 'sunlight', 'watering_schedule'];
     $updates = [];
     $values = [];
 
     foreach ($fields as $field) {
         if (isset($data[$field])) {
             $updates[] = "$field = ?";
-            $values[] = $data[$field];
+            $values[] = $field === 'photo' ? base64_decode($data[$field]) : $data[$field];
         }
     }
 
@@ -119,6 +138,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT' && isset($_GET['id'])) {
 // DELETE product
 if ($_SERVER['REQUEST_METHOD'] === 'DELETE' && isset($_GET['id'])) {
     $productId = $_GET['id'];
+
+    // Check if product exists
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM product WHERE idproduct = ?");
+    $stmt->execute([$productId]);
+    if ($stmt->fetchColumn() == 0) {
+        respond(['error' => 'Product not found'], 404);
+    }
 
     $pdo->prepare("DELETE FROM product_has_category WHERE product_idproduct = ?")->execute([$productId]);
     $pdo->prepare("DELETE FROM product WHERE idproduct = ?")->execute([$productId]);

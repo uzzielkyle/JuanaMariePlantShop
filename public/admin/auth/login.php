@@ -1,13 +1,16 @@
 <?php
-require_once '../middleware/authMiddleware.php';
+require_once '../../middleware/authMiddleware.php';
 
-$auth = authenticate(['user'], true); // silent = true
+$auth = authenticate(['user', 'admin'], true); // silent = true
 
 if ($auth) {
-    if ($auth->role === 'user') {
-        header('Location: ../user');
-        exit;
-    }
+  if ($auth->role === 'admin') {
+    header('Location: ../../admin');
+    exit;
+  } elseif ($auth->role === 'user') {
+    header('Location: ../../user');
+    exit;
+  }
 }
 ?>
 
@@ -17,7 +20,7 @@ if ($auth) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JUANA MARIE - Login</title>
+  <title>JUANA MARIE - Admin Login</title>
   <link
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css"
     rel="stylesheet"
@@ -29,23 +32,22 @@ if ($auth) {
 </head>
 
 <body>
-  <?php include_once "../includes/partials/header.php" ?>
   <main class="container p-3 mb-2 mt-5">
-    <div class="row">
-      <div class="col pb-3 pt-5 px-5 mx-5">
-        <h1 class="pb-2">LOGIN</h1>
+    <div class="row justify-content-center">
+      <div class="col-md-6 pb-3 pt-5 px-5">
         <div class="p-3 border border-dark">
+          <h2 class="text-center pb-3">Admin Login</h2>
           <form id="loginForm">
             <div class="mb-3">
-              <label for="loginEmail" class="form-label">
-                Email address<span class="text-danger">*</span>
+              <label for="loginIdentifier" class="form-label">
+                Email or Username<span class="text-danger">*</span>
               </label>
               <input
-                type="email"
+                type="text"
                 class="form-control rounded-0 border-dark"
-                id="loginEmail"
-                name="loginEmail"
-                aria-describedby="emailHelp">
+                id="loginIdentifier"
+                name="loginIdentifier"
+                required>
             </div>
 
             <div class="mb-3">
@@ -56,7 +58,8 @@ if ($auth) {
                 type="password"
                 class="form-control rounded-0 border-dark"
                 id="loginPassword"
-                name="loginPassword">
+                name="loginPassword"
+                required>
             </div>
 
             <div class="text-center mb-3 mt-5">
@@ -69,26 +72,6 @@ if ($auth) {
               </button>
             </div>
           </form>
-        </div>
-      </div>
-      <div class="col text-center pb-3 pt-5 px-5 mx-5">
-        <h2 class="fw-bold">DON'T HAVE AN ACCOUNT?</h2>
-        <p class="mt-3">
-          By creating an account on our site, you unlock a personalized
-          experience tailored to your needs. As a registered user, you'll also
-          be able to save your preferences, track your activity, and receive
-          special offers or notifications directly related to your interests.
-          Signing up is quick, secure, and completely free—join our community
-          today and start enjoying all the benefits we have to offer!
-        </p>
-        <div class="text-center mb-3 mt-5">
-          <button
-            type="button"
-            class="btn btn-primary px-4 rounded-pill text-black fw-bold border-0"
-            style="background-color: #cff3d7"
-            onclick="window.location.href='./register.php';">
-            REGISTER
-          </button>
         </div>
       </div>
     </div>
