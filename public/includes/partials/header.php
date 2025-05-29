@@ -10,6 +10,8 @@ $base = "/JuanaMariePlantShop/public"; // Change if your root folder name differ
 
 // Final base URL
 $base_url = $protocol . $host . $base;
+
+$auth = authenticate(['user', 'admin'], true); // silent = true
 ?>
 
 
@@ -39,12 +41,19 @@ $base_url = $protocol . $host . $base;
     </ul>
 
     <div class="d-flex align-items-center gap-3">
-      <a href="<?= $base_url ?>/user/cart.php" class="text-dark fs-5">
-        <i class="bi bi-cart"></i>
-      </a>
-      <a href="<?= $base_url ?>/user-account.php">
-        <img src="http://placebeard.it/250/250" alt="Profile" class="rounded-circle" style="height: 32px; width: 32px;">
-      </a>
+      <?php if ($auth): ?>
+        <a href="<?= $base_url ?>/user/cart.php" class="text-dark fs-5">
+          <i class="bi bi-cart"></i>
+        </a>
+      <?php endif; ?>
+      <?php if ($auth): ?>
+        <a href="<?= $base_url ?>/user-account.php">
+          <img src="http://placebeard.it/250/250" alt="Profile" class="rounded-circle" style="height: 32px; width: 32px;">
+        </a>
+      <?php else: ?>
+        <a href="<?= $base_url ?>/auth/login.php" class="btn border-1 border-success fw-bold bg-success-subtle rounded-pill">Login</a>
+      <?php endif; ?>
+
     </div>
   </div>
 </header>
