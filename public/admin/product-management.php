@@ -216,6 +216,7 @@ if (!$auth || $auth->role !== 'admin') {
       });
     });
   </script>
+
 </body>
 
 </html>

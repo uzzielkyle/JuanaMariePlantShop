@@ -122,6 +122,7 @@ if (!$auth || $auth->role !== 'admin') {
     </div>
 
   </div>
+
 </body>
 
 </html>

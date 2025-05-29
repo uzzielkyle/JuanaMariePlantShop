@@ -1,13 +1,10 @@
 <?php
 require_once '../middleware/authMiddleware.php';
 
-$auth = authenticate(['user', 'admin'], true); // silent = true
+$auth = authenticate(['user'], true); // silent = true
 
 if ($auth) {
-  if ($auth->role === 'admin') {
-    header('Location: ../admin');
-    exit;
-  } elseif ($auth->role === 'user') {
+  if ($auth->role === 'user') {
     header('Location: ../user');
     exit;
   }
