@@ -1,3 +1,14 @@
+<?php
+require_once '../middleware/authMiddleware.php';
+
+$auth = authenticate(["admin"], true); // get admin data from JWT
+
+if (!$auth || $auth->role !== 'admin') {
+    header('Location: ./auth/login.php');
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 

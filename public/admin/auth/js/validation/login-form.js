@@ -1,9 +1,4 @@
 $(document).ready(function () {
-    // Custom method for email validation
-    $.validator.addMethod("customEmail", function (value, element) {
-        return this.optional(element) || /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value);
-    }, "Please enter a valid email address");
-
     function setTokenCookie(token) {
         const days = 7; // valid for 7 days
         const expires = new Date(Date.now() + days * 864e5).toUTCString();
@@ -12,22 +7,21 @@ $(document).ready(function () {
 
     $("#loginForm").validate({
         rules: {
-            loginEmail: {
+            loginIdentifier: {
                 required: true,
-                customEmail: true
             },
             loginPassword: {
                 required: true,
-                minlength: 6
+                minlength: 4
             }
         },
         messages: {
-            loginEmail: {
-                required: "Please enter your email address"
+            loginIdentifier: {
+                required: "Please enter your email or username"
             },
             loginPassword: {
                 required: "Please enter your password",
-                minlength: "Password must be at least 6 characters long"
+                minlength: "Password must be at least 4 characters long"
             }
         },
         errorElement: "div",
@@ -42,7 +36,7 @@ $(document).ready(function () {
             error.insertAfter(element);
         },
         submitHandler: function () {
-            const email = $('#loginEmail').val().trim();
+            const identifier = $('#loginIdentifier').val().trim();
             const password = $('#loginPassword').val().trim();
 
             const $loginBtn = $('#loginButton');
@@ -53,20 +47,22 @@ $(document).ready(function () {
             `);
 
             $.ajax({
-                url: '../api/auth.php?action=login-user',
+                url: '../../api/auth.php?action=login-admin',
                 method: 'POST',
                 contentType: 'application/json',
-                data: JSON.stringify({ email, password }),
+                data: JSON.stringify({ email: identifier, password }),
                 success: function (response) {
-                    alert(response)
                     localStorage.setItem('token', response.token);
-                    alert(response.user)
                     setTokenCookie(response.token);
-                    alert('Login successful as user!');
-                    window.location.href = '../user';
+                    alert('Login successful as admin!');
+                    window.location.href = '../index.php';
                 },
-                error: function () {
-                    alert('Invalid email or password.');
+                error: function (xhr) {
+                    let msg = 'Invalid email/username or password.';
+                    if (xhr.responseJSON && xhr.responseJSON.error) {
+                        msg = xhr.responseJSON.error;
+                    }
+                    alert(msg);
 
                     $loginBtn.prop('disabled', false).html('LOG IN');
                 }
