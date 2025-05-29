@@ -4,8 +4,8 @@ require_once '../middleware/authMiddleware.php';
 $auth = authenticate(["user"], true); // get user data from JWT
 
 if (!$auth || $auth->role !== 'user') {
-    header('Location: ../auth/login.php');
-    exit;
+  header('Location: ../auth/login.php');
+  exit;
 }
 ?>
 
@@ -40,7 +40,7 @@ if (!$auth || $auth->role !== 'user') {
         </div>
         <div class="col-2">
           <button
-            type="submit"
+            type="button"
             class="btn btn-primary px-4 rounded-pill text-black fw-bold border-0"
             style="background-color: #cff3d7"
             id="updateButton">
@@ -106,7 +106,7 @@ if (!$auth || $auth->role !== 'user') {
             </div>
 
             <div class="mb-3">
-              <label for="passwordInput" class="form-label">
+              <label for="password" class="form-label">
                 Password<span class="text-danger">*</span>
               </label>
               <input
@@ -117,74 +117,46 @@ if (!$auth || $auth->role !== 'user') {
                 aria-describedby="passwordHelp">
             </div>
 
+            <!-- Mobile Number -->
             <div class="mb-3">
-              <label for="streetInput" class="form-label">
-                Street Address<span class="text-danger">*</span>
-              </label>
-              <input
-                type="text"
-                class="form-control rounded-0 border-dark"
-                id="streetInput"
-                name="streetInput"
-                aria-describedby="streetHelp">
+              <label for="mobileInput" class="form-label">Mobile Number <span class="text-danger">*</span></label>
+              <input type="text" class="form-control rounded-0 border-dark" id="mobileInput">
             </div>
 
+            <!-- Street Address -->
             <div class="mb-3">
-              <label for="cityInput" class="form-label">
-                City<span class="text-danger">*</span>
-              </label>
-              <input
-                type="text"
-                class="form-control rounded-0 border-dark"
-                id="cityInput"
-                name="cityInput"
-                aria-describedby="cityHelp">
+              <label for="streetInput" class="form-label">Street Address <span class="text-danger">*</span></label>
+              <input type="text" class="form-control rounded-0 border-dark" id="streetInput">
             </div>
 
+            <!-- City -->
             <div class="mb-3">
-              <label for="statesInput" class="form-label">
-                State/Province/Region<span class="text-danger">*</span>
-              </label>
-              <input
-                type="text"
-                class="form-control rounded-0 border-dark"
-                id="statesInput"
-                name="statesInput"
-                aria-describedby="stateHelp">
+              <label for="cityInput" class="form-label">City <span class="text-danger">*</span></label>
+              <input type="text" class="form-control rounded-0 border-dark" id="cityInput">
             </div>
 
-            <div class="row">
-              <div class="col">
-                <div class="mb-3">
-                  <label for="countrySelect" class="form-label">
-                    Country<span class="text-danger">*</span>
-                  </label>
-                  <select
-                    class="form-select rounded-0 border-dark"
-                    id="countrySelect"
-                    name="countrySelect"
-                    aria-describedby="countryHelp">
-                    <option value="">Select a country</option>
-                    <option value="us">United States</option>
-                    <option value="ca">Canada</option>
-                    <option value="uk">United Kingdom</option>
-                    <!-- Add more countries as needed -->
-                  </select>
-                </div>
-              </div>
-              <div class="col">
-                <div class="mb-3">
-                  <label for="zipCode" class="form-label">
-                    Zip Code<span class="text-danger">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    class="form-control rounded-0 border-dark"
-                    id="zipCode"
-                    name="zipCode"
-                    aria-describedby="zipHelp">
-                </div>
-              </div>
+            <!-- State/Province/Region -->
+            <div class="mb-3">
+              <label for="statesInput" class="form-label">State/Province/Region <span class="text-danger">*</span></label>
+              <input type="text" class="form-control rounded-0 border-dark" id="statesInput">
+            </div>
+
+            <!-- Country -->
+            <div class="mb-3">
+              <label for="countrySelect" class="form-label">Country <span class="text-danger">*</span></label>
+              <select class="form-select rounded-0 border-dark" id="countrySelect">
+                <option value="">Select a country</option>
+                <option value="Philippines">Philippines</option>
+                <option value="United States">United States</option>
+                <option value="Canada">Canada</option>
+                <option value="United Kingdom">United Kingdom</option>
+              </select>
+            </div>
+
+            <!-- Zip Code -->
+            <div class="mb-3">
+              <label for="zipCode" class="form-label">Zip Code <span class="text-danger">*</span></label>
+              <input type="text" class="form-control rounded-0 border-dark" id="zipCode">
             </div>
         </form>
       </div>
@@ -193,6 +165,7 @@ if (!$auth || $auth->role !== 'user') {
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="../js/dynamic-nav.js"></script>
+  <script src="js/user-account.js"></script>
 </body>
 
 </html>
