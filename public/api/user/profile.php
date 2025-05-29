@@ -17,7 +17,7 @@ if (!$auth || $auth->role !== 'user') {
     respond(['error' => 'Unauthorized'], 403);
 }
 
-$userid = $auth->iduser;  // assuming 'iduser' is in JWT
+$userid = $auth->id;  // assuming 'iduser' is in JWT
 
 // GET own profile
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
