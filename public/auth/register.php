@@ -1,3 +1,19 @@
+<?php
+require_once '../middleware/authMiddleware.php';
+
+$auth = authenticate(['user', 'admin'], true); // silent = true
+
+if ($auth) {
+  if ($auth->role === 'admin') {
+    header('Location: ../admin');
+    exit;
+  } elseif ($auth->role === 'user') {
+    header('Location: ../user');
+    exit;
+  }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -85,7 +101,7 @@
                 aria-describedby="emailHelp">
             </div>
 
-            <div class="mb-3">
+            <div class="mb-3 position-relative">
               <label for="passwordInput" class="form-label">
                 Password<span class="text-danger">*</span>
               </label>
@@ -95,9 +111,12 @@
                 id="passwordInput"
                 name="passwordInput"
                 aria-describedby="passwordHelp">
+              <button type="button" class="btn btn-outline-secondary btn-sm position-absolute top-50 end-0 translate-middle-y me-2 toggle-password" data-target="passwordInput" tabindex="-1">
+                <i class="bi bi-eye"></i>
+              </button>
             </div>
 
-            <div class="mb-3">
+            <div class="mb-3 position-relative">
               <label for="confirmInput" class="form-label">
                 Confirm Password<span class="text-danger">*</span>
               </label>
@@ -107,6 +126,20 @@
                 id="confirmInput"
                 name="confirmInput"
                 aria-describedby="confirmHelp">
+              <button type="button" class="btn btn-outline-secondary btn-sm position-absolute top-50 end-0 translate-middle-y me-2 toggle-password" data-target="confirmInput" tabindex="-1">
+                <i class="bi bi-eye"></i>
+              </button>
+            </div>
+
+            <div class="mb-3">
+              <label for="telephoneInput" class="form-label">Telephone<span class="text-danger">*</span></label>
+              <input
+                type="text"
+                class="form-control rounded-0 border-dark"
+                id="telephoneInput"
+                name="telephoneInput"
+                aria-describedby="telephoneHelp"
+                placeholder="e.g. +1234567890">
             </div>
 
             <div class="mb-3">
@@ -201,6 +234,24 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/additional-methods.min.js"></script>
   <script src="./js/validation/register-form.js"></script>
+
+  <script>
+    $(document).on('click', '.toggle-password', function() {
+      const targetInputId = $(this).data('target');
+      const input = $('#' + targetInputId);
+      const icon = $(this).find('i');
+
+      if (input.attr('type') === 'password') {
+        input.attr('type', 'text');
+        icon.removeClass('bi-eye').addClass('bi-eye-slash');
+        $(this).addClass('active'); // Bootstrap active class
+      } else {
+        input.attr('type', 'password');
+        icon.removeClass('bi-eye-slash').addClass('bi-eye');
+        $(this).removeClass('active');
+      }
+    });
+  </script>
 </body>
 
 </html>

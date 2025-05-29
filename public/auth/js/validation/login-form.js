@@ -10,7 +10,6 @@ $(document).ready(function () {
         document.cookie = `token=${encodeURIComponent(token)}; path=/; SameSite=Lax`;
     }
 
-
     $("#loginForm").validate({
         rules: {
             loginEmail: {
