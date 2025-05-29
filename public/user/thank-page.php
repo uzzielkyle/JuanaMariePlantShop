@@ -1,6 +1,12 @@
 <?php
 require_once '../middleware/authMiddleware.php';
 
+$auth = authenticate(["user"], true); // get user data from JWT
+
+if (!$auth || $auth->role !== 'user') {
+    header('Location: ../auth/login.php');
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
