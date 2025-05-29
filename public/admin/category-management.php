@@ -1,15 +1,61 @@
+<?php
+require_once '../middleware/authMiddleware.php';
+require_once '../config/db.php';
+
+$auth = authenticate(["admin"], true);
+if (!$auth || $auth->role !== 'admin') {
+  header('Location: ./auth/login.php');
+  exit;
+}
+
+// Handle Add Category
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_category'])) {
+  $name = trim($_POST['category_name']);
+  if (!empty($name)) {
+    $stmt = $pdo->prepare("INSERT INTO category (name) VALUES (?)");
+    $stmt->execute([$name]);
+  }
+  header("Location: category-management.php");
+  exit;
+}
+
+// Handle Edit Category
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_category'])) {
+  $id = $_POST['category_id'];
+  $name = trim($_POST['category_name']);
+  if (!empty($id) && !empty($name)) {
+    $stmt = $pdo->prepare("UPDATE category SET name = ? WHERE idcategory = ?");
+    $stmt->execute([$name, $id]);
+  }
+  header("Location: category-management.php");
+  exit;
+}
+
+// Handle Delete Category
+if (isset($_GET['delete'])) {
+  $id = $_GET['delete'];
+  $stmt = $pdo->prepare("DELETE FROM category WHERE idcategory = ?");
+  $stmt->execute([$id]);
+  header("Location: category-management.php");
+  exit;
+}
+
+// Fetch all categories
+$stmt = $pdo->query("SELECT * FROM category ORDER BY idcategory DESC");
+$categories = $stmt->fetchAll();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="UTF-8">
-  <title>Categories</title>
+  <title>Manage Categories</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
-<body class="m-0">
+<body>
   <div class="d-flex">
     <?php include 'includes/sidebar.php'; ?>
 
@@ -17,86 +63,74 @@
       <div class="container-fluid">
         <div class="d-flex justify-content-between align-items-center mb-4">
           <h1 class="fw-bold">Categories</h1>
-          <button class="btn btn-success rounded-pill text-white fw-bold border-0" data-bs-toggle="modal" data-bs-target="#addCategoryModal"> Add New Category
+          <button class="btn btn-success rounded-pill text-white fw-bold border-0" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+            Add New Category
           </button>
         </div>
-
-        <?php
-        $categories = ["Herbs", "Flowers"];
-        ?>
 
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4 mb-5">
           <?php foreach ($categories as $category): ?>
             <div class="col">
               <div class="card h-100 border-dark">
                 <div class="card-body text-center">
-                  <h5 class="card-title fw-bold"><?= $category ?></h5>
-                  <button class="btn btn-sm btn-warning edit-btn rounded-pill text-black fw-bold border-0" data-name="<?= $category ?>">Edit</button>
-                  <button class="btn btn-sm btn-danger delete-btn rounded-pill text-white fw-bold border-0" data-name="<?= $category ?>">Delete</button>
+                  <h5 class="card-title fw-bold"><?= htmlspecialchars($category['name']) ?></h5>
+                  <button class="btn btn-sm btn-warning rounded-pill text-black fw-bold border-0" data-bs-toggle="modal"
+                          data-bs-target="#editCategoryModal<?= $category['idcategory'] ?>">Edit</button>
+                  <a href="?delete=<?= $category['idcategory'] ?>" class="btn btn-sm btn-danger rounded-pill text-white fw-bold border-0"
+                     onclick="return confirm('Are you sure you want to delete this category?')">Delete</a>
                 </div>
+              </div>
+            </div>
+
+            <!-- Edit Modal -->
+            <div class="modal fade" id="editCategoryModal<?= $category['idcategory'] ?>" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog">
+                <form method="POST" class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Edit Category</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <input type="hidden" name="category_id" value="<?= $category['idcategory'] ?>">
+                    <div class="mb-3">
+                      <label class="form-label">Category Name</label>
+                      <input type="text" name="category_name" class="form-control" value="<?= htmlspecialchars($category['name']) ?>" required>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="submit" name="edit_category" class="btn btn-warning rounded-pill fw-bold">Update</button>
+                  </div>
+                </form>
               </div>
             </div>
           <?php endforeach; ?>
         </div>
-
       </div>
     </div>
   </div>
 
-  <!-- Add Category Modal -->
-  <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+  <!-- Add Modal -->
+  <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
-      <form id="add-category-form" class="modal-content">
+      <form method="POST" class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="addCategoryModalLabel">Add New Category</h5>
+          <h5 class="modal-title">Add Category</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="mb-3">
-            <label for="new-category-name" class="form-label">Category Name</label>
-            <input type="text" class="form-control" id="new-category-name" name="category_name" required>
+            <label class="form-label">Category Name</label>
+            <input type="text" name="category_name" class="form-control" required>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="submit" class="btn btn-success rounded-pill text-white fw-bold border-0">Add Category</button>
+          <button type="submit" name="add_category" class="btn btn-success rounded-pill fw-bold text-white">Add</button>
         </div>
       </form>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    $(document).ready(function() {
-      // Add new category
-      $('#add-category-form').on('submit', function(e) {
-        e.preventDefault();
-        const newCategory = $('#new-category-name').val().trim();
-        if (newCategory) {
-          alert('New category added: ' + newCategory);
-          $('#addCategoryModal').modal('hide');
-          // Send AJAX request to save category
-          location.reload(); // Simulate refresh
-        }
-      });
-
-      // Edit category
-      $('.edit-btn').on('click', function() {
-        const oldName = $(this).data('name');
-        const newName = prompt('Edit category name:', oldName);
-        if (newName && newName !== oldName) {
-          alert('Category updated: ' + newName);
-        }
-      });
-
-      // Delete category
-      $('.delete-btn').on('click', function() {
-        const name = $(this).data('name');
-        if (confirm('Are you sure you want to delete "' + name + '"?')) {
-          alert('Category deleted: ' + name);
-        }
-      });
-    });
-  </script>
 </body>
 
 </html>
