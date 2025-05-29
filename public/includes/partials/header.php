@@ -47,7 +47,7 @@ $auth = authenticate(['user', 'admin'], true); // silent = true
         </a>
       <?php endif; ?>
       <?php if ($auth): ?>
-        <a href="<?= $base_url ?>/user-account.php">
+        <a href="<?= $base_url ?>/user/user-account.php">
           <img src="http://placebeard.it/250/250" alt="Profile" class="rounded-circle" style="height: 32px; width: 32px;">
         </a>
       <?php else: ?>
