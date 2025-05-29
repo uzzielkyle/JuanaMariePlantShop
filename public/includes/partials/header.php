@@ -11,7 +11,7 @@ $base = "/JuanaMariePlantShop/public"; // Change if your root folder name differ
 // Final base URL
 $base_url = $protocol . $host . $base;
 
-$auth = authenticate(['user', 'admin'], true); // silent = true
+$auth = authenticate(['user'], true); // silent = true
 ?>
 
 
