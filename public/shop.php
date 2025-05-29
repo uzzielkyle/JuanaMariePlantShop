@@ -1,6 +1,5 @@
 <?php
 require_once './middleware/authMiddleware.php';
-
 ?>
 
 <!DOCTYPE html>
@@ -10,60 +9,94 @@ require_once './middleware/authMiddleware.php';
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>JUANA MARIE</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 </head>
 
 <body>
   <?php include_once "./includes/partials/header.php" ?>
-  <main>
-    <?php
-    $categories = [
-      "All" => ["Rosemary", "Thyme", "Oregano", "Lavender"],
-      "Herbs" => ["Rosemary", "Thyme", "Oregano"],
-      "Flowers" => ["Lavender"]
-    ];
-    ?>
 
+  <main>
     <section class="container py-5 pt-5 mt-5">
       <h2 class="text-center fw-bold mb-4">PRODUCTS</h2>
 
+      <!-- Category Filter Buttons -->
       <div class="row mb-4">
-        <div class="col-12">
-          <?php foreach (array_keys($categories) as $category): ?>
-            <button class="btn btn-outline-dark me-2 category-btn" data-category="<?= $category ?>">
-              <?= $category ?>
-            </button>
-          <?php endforeach; ?>
+        <div class="col-12" id="category-buttons">
+          <!-- Buttons will be added dynamically -->
         </div>
       </div>
 
+      <!-- Product Grid -->
       <div class="row g-4" id="product-list">
-        <?php foreach ($categories['All'] as $herb): ?>
-          <div class="col-12 col-sm-6 col-lg-3 product-card" data-category="<?= in_array($herb, $categories['Herbs']) ? 'Herbs' : 'Flowers' ?>">
-            <a href="product/product-page.php?product=<?= urlencode($herb) ?>" class="text-decoration-none text-dark">
-              <div class="card h-100 border border-dark rounded-0 text-center">
-                <img src="https://via.placeholder.com/300x200?text=<?= urlencode($herb) ?>" class="card-img-top" alt="<?= $herb ?>">
-                <div class="card-body">
-                  <h5 class="card-title fw-bold"><?= $herb ?></h5>
-                  <h5 class="card-title fw-light">P 500</h5>
-                </div>
-              </div>
-            </a>
-          </div>
-        <?php endforeach; ?>
+        <!-- Products will be injected here dynamically -->
       </div>
     </section>
   </main>
 
+  <footer></footer>
+
+  <!-- Scripts -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     $(document).ready(function() {
-      $('.category-btn').on('click', function() {
-        var selectedCategory = $(this).data('category');
+      const productList = $('#product-list');
+      const categoryButtons = $('#category-buttons');
+      const categorySet = new Set();
+
+      $.ajax({
+        url: 'http://localhost/JuanaMariePlantShop/public/api/user/product.php',
+        method: 'GET',
+        success: function(products) {
+          productList.empty();
+
+          products.forEach(product => {
+            const categories = (product.categories || 'Uncategorized').split(',').map(c => c.trim());
+
+            categories.forEach(cat => {
+              if (cat) categorySet.add(cat);
+            });
+
+            const firstCategory = categories[0] || 'Uncategorized';
+            const imageUrl = product.photo ? product.photo : `https://via.placeholder.com/300x200?text=${encodeURIComponent(product.name)}`;
+
+            const productCard = `
+              <div class="col-12 col-sm-6 col-lg-3 product-card" data-category="${firstCategory}">
+                <a href="product/product-page.php?id=${product.idproduct}" class="text-decoration-none text-dark">
+                  <div class="card h-100 border border-dark rounded-0 text-center">
+                    <img src="${imageUrl}" class="card-img-top" alt="${product.name}">
+                    <div class="card-body">
+                      <h5 class="card-title fw-bold">${product.name}</h5>
+                      <h5 class="card-title fw-light">P ${parseFloat(product.price).toFixed(2)}</h5>
+                    </div>
+                  </div>
+                </a>
+              </div>
+            `;
+            productList.append(productCard);
+          });
+
+          // Build dynamic category buttons
+          categoryButtons.append(`<button class="btn btn-outline-dark me-2 category-btn" data-category="All">All</button>`);
+          [...categorySet].sort().forEach(category => {
+            categoryButtons.append(`
+              <button class="btn btn-outline-dark me-2 category-btn" data-category="${category}">
+                ${category}
+              </button>
+            `);
+          });
+        },
+        error: function() {
+          productList.html('<p class="text-danger">Failed to load products. Please try again later.</p>');
+        }
+      });
+
+      // Filtering Logic
+      $(document).on('click', '.category-btn', function() {
+        const selectedCategory = $(this).data('category');
 
         $('.product-card').each(function() {
-          var cardCategory = $(this).data('category');
+          const cardCategory = $(this).data('category');
 
           if (selectedCategory === 'All' || cardCategory === selectedCategory) {
             $(this).show();
@@ -74,9 +107,7 @@ require_once './middleware/authMiddleware.php';
       });
     });
   </script>
-  <footer></footer>
 
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="js/dynamic-nav.js"></script>
 </body>
 
