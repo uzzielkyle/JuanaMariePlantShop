@@ -1,3 +1,14 @@
+<?php
+require_once '../middleware/authMiddleware.php';
+
+$auth = authenticate(["user"], true); // get user data from JWT
+
+if (!$auth || $auth->role !== 'user') {
+    header('Location: ../auth/login.php');
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -133,7 +144,7 @@
 
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="js/cart-function.js"></script>
-
+  <script src="../js/dynamic-nav.js"></script>
 </body>
 
 </html>

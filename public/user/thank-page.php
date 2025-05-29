@@ -1,3 +1,14 @@
+<?php
+require_once '../middleware/authMiddleware.php';
+
+$auth = authenticate(["user"], true); // get user data from JWT
+
+if (!$auth || $auth->role !== 'user') {
+    header('Location: ../auth/login.php');
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -41,6 +52,9 @@
       <a href="" style="color: #cff3d7;">Go back to shopping</a>
     </div>
   </section>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="../js/dynamic-nav.js"></script>
 </body>
 
 </html>

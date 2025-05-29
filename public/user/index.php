@@ -1,3 +1,14 @@
+<?php
+require_once '../middleware/authMiddleware.php';
+
+$auth = authenticate(["user"], true); // get user data from JWT
+
+if (!$auth || $auth->role !== 'user') {
+    header('Location: ../auth/login.php');
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -134,10 +145,11 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="js/modal-function.js">
 
-  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="js/modal-function.js"> </script>
+  <script src="../js/dynamic-nav.js"></script>
 </body>
 
 </html>

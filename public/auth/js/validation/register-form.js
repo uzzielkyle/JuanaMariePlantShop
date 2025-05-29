@@ -1,12 +1,23 @@
 $(document).ready(function () {
-  // Custom validation methods
   $.validator.addMethod("gmail", function (value, element) {
     return this.optional(element) || /^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(value);
   }, "Please enter a valid Gmail address");
 
-  // Initialize validation
+  $.validator.addMethod("letters", function (value, element) {
+    return this.optional(element) || /^[A-Za-z\s]+$/.test(value);
+  }, "Only alphabetical characters allowed");
+
+  $.validator.addMethod("strongPassword", function (value, element) {
+    return this.optional(element) ||
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(value);
+  }, "Must contain uppercase, lowercase, number, and symbol");
+
+  $.validator.addMethod("phoneLoose", function (value, element) {
+    return this.optional(element) || /^[\d\s()+\-]+$/.test(value);
+  }, "Please enter a valid phone number");
+
+
   $("#registerForm").validate({
-    // Validation rules
     rules: {
       firstInput: {
         required: true,
@@ -28,6 +39,10 @@ $(document).ready(function () {
         required: true,
         equalTo: "#passwordInput"
       },
+      telephoneInput: {
+        required: true,
+        phoneLoose: true
+      },
       streetInput: {
         required: true
       },
@@ -47,20 +62,50 @@ $(document).ready(function () {
         digits: true
       }
     },
-
-    // Error messages
     messages: {
       firstInput: {
         required: "First name is required",
         letters: "Only letters allowed"
       },
-      // Define similar messages for all other fields
+      lastInput: {
+        required: "Last name is required",
+        letters: "Only letters allowed"
+      },
+      emailInput: {
+        required: "Email is required",
+        gmail: "Please enter a valid Gmail address"
+      },
+      passwordInput: {
+        required: "Password is required",
+        strongPassword: "Password must contain uppercase, lowercase, number, and symbol"
+      },
+      confirmInput: {
+        required: "Please confirm your password",
+        equalTo: "Passwords do not match"
+      },
+      telephoneInput: {
+        required: "Telephone is required",
+        phoneLoose: "Please enter a valid telephone number"
+      },
+      streetInput: {
+        required: "Street address is required"
+      },
+      cityInput: {
+        required: "City is required",
+        letters: "Only letters allowed"
+      },
+      statesInput: {
+        required: "State is required",
+        letters: "Only letters allowed"
+      },
       countrySelect: {
         required: "Please select a country"
+      },
+      zipCode: {
+        required: "Zip code is required",
+        digits: "Zip code must be numeric"
       }
     },
-
-    // Bootstrap error styling
     errorClass: "invalid-feedback",
     errorElement: "div",
     highlight: function (element) {
@@ -69,8 +114,6 @@ $(document).ready(function () {
     unhighlight: function (element) {
       $(element).removeClass('is-invalid');
     },
-
-    // Error placement
     errorPlacement: function (error, element) {
       if (element.prop("type") === "select-one") {
         error.insertAfter(element.next(".select2-container"));
@@ -79,21 +122,55 @@ $(document).ready(function () {
       }
     },
 
-    // Form submission
     submitHandler: function (form) {
-      alert("Form submitted successfully!");
-      form.submit();
+      const $submitBtn = $('#registerButton');
+      $submitBtn.prop('disabled', true).text('Registering...');
+
+      const payload = {
+        first_name: $('#firstInput').val().trim(),
+        last_name: $('#lastInput').val().trim(),
+        email: $('#emailInput').val().trim(),
+        password: $('#passwordInput').val(),
+        address: `${$('#streetInput').val().trim()}, ${$('#cityInput').val().trim()}, ${$('#statesInput').val().trim()}, ${$('#countrySelect').val()}, ${$('#zipCode').val().trim()}`,
+        telephone: $('#telephoneInput').val().trim() || ""
+      };
+
+      $.ajax({
+        url: '../api/auth.php?action=register-user',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(payload),
+        success: function (response) {
+          $.ajax({
+            url: '../api/auth.php?action=login-user',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+              email: payload.email,
+              password: payload.password
+            }),
+            success: function (loginResp) {
+              localStorage.setItem('token', loginResp.token);
+              document.cookie = `token=${loginResp.token}; path=/; SameSite=Lax;`;
+              alert('Registration successful!');
+              window.location.href = '../user';
+            },
+            error: function () {
+              alert('Registration succeeded but auto-login failed. Please login manually.');
+              window.location.href = './login.php';
+            }
+          });
+        },
+        error: function (jqXHR) {
+          let errMsg = 'Registration failed. Please try again.';
+          if (jqXHR.responseJSON && jqXHR.responseJSON.error) {
+            errMsg = jqXHR.responseJSON.error;
+          }
+          alert(errMsg);
+          $submitBtn.prop('disabled', false).text('Register');
+        }
+      });
     }
+
   });
-
-  // Custom letter validation
-  $.validator.addMethod("letters", function (value, element) {
-    return this.optional(element) || /^[A-Za-z\s]+$/.test(value);
-  }, "Only alphabetical characters allowed");
-
-  // Custom password validation
-  $.validator.addMethod("strongPassword", function (value, element) {
-    return this.optional(element) ||
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(value);
-  }, "Must contain uppercase, lowercase, number, and symbol");
 });

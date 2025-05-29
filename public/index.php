@@ -1,3 +1,8 @@
+<?php
+require_once './middleware/authMiddleware.php';
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -71,7 +76,8 @@
     </main>
     <footer></footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/dynamic-nav.js"></script>
 </body>
 
 </html>
