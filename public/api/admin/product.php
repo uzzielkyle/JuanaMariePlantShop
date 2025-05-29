@@ -21,6 +21,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && !isset($_GET['id'])) {
     $products = $stmt->fetchAll();
 
     foreach ($products as &$product) {
+        // base64 encode photo blob if present
+        if (!empty($product['photo'])) {
+            $product['photo'] = base64_encode($product['photo']);
+        } else {
+            $product['photo'] = null;
+        }
+
+        // fetch categories
         $stmtCat = $pdo->prepare("SELECT category_idcategory FROM product_has_category WHERE product_idproduct = ?");
         $stmtCat->execute([$product['idproduct']]);
         $product['categories'] = array_column($stmtCat->fetchAll(), 'category_idcategory');
@@ -36,6 +44,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
     $product = $stmt->fetch();
     if (!$product) {
         respond(['error' => 'Product not found'], 404);
+    }
+
+    // base64 encode photo blob if present
+    if (!empty($product['photo'])) {
+        $product['photo'] = base64_encode($product['photo']);
+    } else {
+        $product['photo'] = null;
     }
 
     $stmtCat = $pdo->prepare("SELECT category_idcategory FROM product_has_category WHERE product_idproduct = ?");

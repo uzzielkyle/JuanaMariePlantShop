@@ -44,25 +44,34 @@ $(document).ready(function () {
                 container.empty();
 
                 products.forEach(product => {
-                    const imageUrl = product.photo ? product.photo : `https://placehold.jp/c0c0c0/ffffff/600x400.png?text=${encodeURIComponent(product.name)}`;
+                    let imageUrl;
+                    if (product.photo) {
+                        // Convert binary or base64 to proper data URI
+                        imageUrl = `data:image/jpeg;base64,${product.photo}`;
+                    } else {
+                        // Fallback placeholder
+                        imageUrl = `https://placehold.jp/c0c0c0/ffffff/600x400.png?text=${encodeURIComponent(product.name)}`;
+                    }
+
                     const card = `
-                        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-                            <div class="card h-100 shadow-sm small">
-                                <img src="${imageUrl}" class="card-img-top" alt="${product.name}" style="height: 100px; object-fit: cover;">
-                                <div class="card-body p-2">
-                                    <h6 class="card-title text-truncate mb-1 fw-bold">${product.name}</h6>
-                                    <p class="card-text mb-1"><strong>₱${product.price}</strong></p>
-                                    <p class="card-text mb-1"><small>☀ ${product.sunlight || '-'}</small></p>
-                                    <p class="card-text mb-2"><small>💧 ${product.watering_schedule || '-'}</small></p>
-                                    <div class="d-flex justify-content-between">
-                                        <button class="btn btn-sm btn-warning edit-btn" data-id="${product.idproduct}"><i class="bi bi-pencil-square"></i></button>
-                                        <button class="btn btn-sm btn-danger delete-btn" data-id="${product.idproduct}"><i class="bi bi-trash3"></i></button>
-                                    </div>
-                                </div>
+                <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                    <div class="card h-100 shadow-sm small">
+                        <img src="${imageUrl}" class="card-img-top" alt="${product.name}" style="height: 100px; object-fit: cover;">
+                        <div class="card-body p-2">
+                            <h6 class="card-title text-truncate mb-1 fw-bold">${product.name}</h6>
+                            <p class="card-text mb-1"><strong>₱${product.price}</strong></p>
+                            <p class="card-text mb-1"><small>☀ ${product.sunlight || '-'}</small></p>
+                            <p class="card-text mb-2"><small>💧 ${product.watering_schedule || '-'}</small></p>
+                            <div class="d-flex justify-content-between">
+                                <button class="btn btn-sm btn-warning edit-btn" data-id="${product.idproduct}"><i class="bi bi-pencil-square"></i></button>
+                                <button class="btn btn-sm btn-danger delete-btn" data-id="${product.idproduct}"><i class="bi bi-trash3"></i></button>
                             </div>
-                        </div>`;
+                        </div>
+                    </div>
+                </div>`;
                     container.append(card);
                 });
+
                 hideLoading();
             },
             error: function () {
@@ -136,43 +145,55 @@ $(document).ready(function () {
             const id = $('#plantId').val();
             const token = localStorage.getItem('token');
 
-            // Create FormData to handle file + other data
-            const formData = new FormData();
+            const productData = {
+                name: $('#name').val().trim(),
+                price: $('#price').val().trim() || null,
+                sunlight: $('#sunlight').val().trim() || null,
+                watering_schedule: $('#watering').val().trim() || null,
+                difficulty: $('#difficulty').val().trim() || null,
+                description: $('#description').val().trim(),
+                history: $('#history').val().trim() || null,
+                care_guide: $('#care').val().trim() || null,
+                propagation: $('#propagation').val().trim() || null
+            };
 
-            formData.append('name', $('#name').val().trim());
-            formData.append('price', $('#price').val().trim() || null);
-            formData.append('sunlight', $('#sunlight').val().trim() || null);
-            formData.append('watering_schedule', $('#watering').val().trim() || null);
-            formData.append('difficulty', $('#difficulty').val().trim() || null);
-            formData.append('description', $('#description').val().trim());
-            formData.append('history', $('#history').val().trim() || null);
-            formData.append('care_guide', $('#care').val().trim() || null);
-            formData.append('propagation', $('#propagation').val().trim() || null);
-
-            // Append photo file if selected
             const photoFile = $('#photo')[0].files[0];
+
             if (photoFile) {
-                formData.append('photo', photoFile);
+                const reader = new FileReader();
+                reader.onloadend = function () {
+                    const base64Photo = reader.result.split(',')[1]; // remove data:image/... prefix
+                    productData.photo = base64Photo;
+
+                    sendUpdateRequest(productData);
+                };
+                reader.readAsDataURL(photoFile);
+            } else {
+                sendUpdateRequest(productData);
             }
 
-            $.ajax({
-                url: `${apiBase}?id=${id}`,
-                method: 'PUT',
-                headers: { Authorization: `Bearer ${token}` },
-                processData: false,  // important for FormData
-                contentType: false,  // important for FormData
-                data: formData,
-                success: function () {
-                    $('#plantModal').modal('hide');
-                    fetchProducts();
-                },
-                error: function (xhr, status, error) {
-                    console.error('Update error:', status, error);
-                    console.error('Response text:', xhr.responseText);
-                    alert('Failed to update plant.');
-                }
-            });
+            function sendUpdateRequest(data) {
+                $.ajax({
+                    url: `${apiBase}?id=${id}`,
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    data: JSON.stringify(data),
+                    success: function () {
+                        $('#plantModal').modal('hide');
+                        fetchProducts();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Update error:', status, error);
+                        console.error('Response text:', xhr.responseText);
+                        alert('Failed to update plant.');
+                    }
+                });
+            }
         }
+
     });
 
     // Delete button click - show modal
@@ -255,27 +276,43 @@ $(document).ready(function () {
             };
 
             const token = localStorage.getItem('token');
+            const photoFile = $('#newPhoto')[0].files[0];
 
-            $.ajax({
-                url: apiBase,
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${token}`
-                },
-                contentType: 'application/json',
-                data: JSON.stringify(data),
-                success: function () {
-                    $('#addPlantModal').modal('hide');
-                    $('#addPlantForm')[0].reset();
-                    $('#addPlantForm input, #addPlantForm textarea').removeClass('is-valid');
-                    fetchProducts();
-                },
-                error: function (xhr, status, error) {
-                    console.error('AJAX error:', status, error);
-                    console.error('Response text:', xhr.responseText);
-                    alert('Failed to add plant.');
-                }
-            });
+            if (photoFile) {
+                const reader = new FileReader();
+                reader.onloadend = function () {
+                    const base64Photo = reader.result.split(',')[1]; // remove data:image/... prefix
+                    data.photo = base64Photo;
+
+                    sendCreateRequest(data);
+                };
+                reader.readAsDataURL(photoFile);
+            } else {
+                sendCreateRequest(data);
+            }
+
+            function sendCreateRequest(payload) {
+                $.ajax({
+                    url: apiBase,
+                    method: 'POST',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    data: JSON.stringify(payload),
+                    success: function () {
+                        $('#addPlantModal').modal('hide');
+                        $('#addPlantForm')[0].reset();
+                        $('#addPlantForm input, #addPlantForm textarea').removeClass('is-valid');
+                        fetchProducts();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('AJAX error:', status, error);
+                        console.error('Response text:', xhr.responseText);
+                        alert('Failed to add plant.');
+                    }
+                });
+            }
         }
     });
 
