@@ -46,32 +46,36 @@ require_once './middleware/authMiddleware.php';
     </div>
   </section>
 
- <!-- Meet the Team Section -->
+  <!-- Meet the Team Section -->
   <section class="container py-5">
     <h2 class="text-center fw-bold mb-4 text-success">MEET THE TEAM</h2>
     <div class="row g-4 justify-content-center">
       <!-- Jovan Timosa -->
       <div class="col-12 col-sm-6 col-lg-3">
-        <div class="card h-100 border-0 shadow rounded-4 text-center">
-          <img src="./assets/jovtim.png" class="card-img-top rounded-circle mx-auto mt-3"
-            alt="Jovan Timosa" style="width: 150px; height: 150px; object-fit: cover;">
-          <div class="card-body">
-            <h5 class="card-title fw-bold">Jovan Timosa</h5>
-            <p class="card-text text-muted">Developer</p>
+        <a href="https://github.com/JovTim" class="text-decoration-none text-dark">
+          <div class="card h-100 border-0 shadow rounded-4 text-center">
+            <img src="./assets/jovtim.png" class="card-img-top rounded-circle mx-auto mt-3"
+              alt="Jovan Timosa" style="width: 150px; height: 150px; object-fit: cover;">
+            <div class="card-body">
+              <h5 class="card-title fw-bold">Jovan Timosa</h5>
+              <p class="card-text text-muted">Developer</p>
+            </div>
           </div>
-        </div>
+        </a>
       </div>
 
       <!-- Uzziel Kyle Ynciong -->
       <div class="col-12 col-sm-6 col-lg-3">
-        <div class="card h-100 border-0 shadow rounded-4 text-center">
-          <img src="./assets/uzzielkyle.png" class="card-img-top rounded-circle mx-auto mt-3"
-            alt="Uzziel Kyle Ynciong" style="width: 150px; height: 150px; object-fit: cover;">
-          <div class="card-body">
-            <h5 class="card-title fw-bold">Uzziel Kyle Ynciong</h5>
-            <p class="card-text text-muted">Developer</p>
+        <a href="https://github.com/uzzielkyle" class="text-decoration-none text-dark">
+          <div class="card h-100 border-0 shadow rounded-4 text-center">
+            <img src="./assets/uzzielkyle.png" class="card-img-top rounded-circle mx-auto mt-3"
+              alt="Uzziel Kyle Ynciong" style="width: 150px; height: 150px; object-fit: cover;">
+            <div class="card-body">
+              <h5 class="card-title fw-bold">Uzziel Kyle Ynciong</h5>
+              <p class="card-text text-muted">Developer</p>
+            </div>
           </div>
-        </div>
+        </a>
       </div>
     </div>
   </section>

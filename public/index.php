@@ -58,21 +58,23 @@ try {
                             <?php if (count($products) > 0): ?>
                                 <?php foreach ($products as $product): ?>
                                     <div class="col-12 col-sm-6 col-lg-3">
-                                        <div class="card h-100 border-0 shadow-sm text-center transition" style="font-size: 0.85rem;">
-                                            <?php
-                                            $imgSrc = "https://placehold.jp/c0c0c0/ffffff/600x400.png?text=" . urlencode($product['name']);
-                                            if (!empty($product['photo'])) {
-                                                $imgData = base64_encode($product['photo']);
-                                                $imgSrc = "data:image/jpeg;base64,{$imgData}";
-                                            }
-                                            ?>
-                                            <img src="<?= $imgSrc ?>" class="card-img-top rounded-top-3" alt="<?= htmlspecialchars($product['name']) ?>" style="height: 160px; object-fit: cover;">
-                                            <div class="card-body px-3 py-2">
-                                                <h6 class="card-title fw-bold mb-1 text-truncate" style="font-size: 0.95rem;"><?= htmlspecialchars($product['name']) ?></h6>
-                                                <p class="card-text text-success fw-semibold mb-1">₱<?= number_format($product['price'], 2) ?></p>
-                                                <p class="card-text text-muted small text-truncate"><?= htmlspecialchars($product['description']) ?></p>
+                                        <a href="product/product-page.php?id=<?= urlencode($product['idproduct']) ?>" class="text-decoration-none text-dark">
+                                            <div class="card h-100 border-0 shadow-sm text-center transition" style="font-size: 0.85rem;">
+                                                <?php
+                                                $imgSrc = "https://placehold.jp/c0c0c0/ffffff/600x400.png?text=" . urlencode($product['name']);
+                                                if (!empty($product['photo'])) {
+                                                    $imgData = base64_encode($product['photo']);
+                                                    $imgSrc = "data:image/jpeg;base64,{$imgData}";
+                                                }
+                                                ?>
+                                                <img src="<?= $imgSrc ?>" class="card-img-top rounded-top-3" alt="<?= htmlspecialchars($product['name']) ?>" style="height: 160px; object-fit: cover;">
+                                                <div class="card-body px-3 py-2">
+                                                    <h6 class="card-title fw-bold mb-1 text-truncate" style="font-size: 0.95rem;"><?= htmlspecialchars($product['name']) ?></h6>
+                                                    <p class="card-text text-success fw-semibold mb-1">₱<?= number_format($product['price'], 2) ?></p>
+                                                    <p class="card-text text-muted small text-truncate"><?= htmlspecialchars($product['description']) ?></p>
+                                                </div>
                                             </div>
-                                        </div>
+                                        </a>
                                     </div>
                                 <?php endforeach; ?>
                             <?php else: ?>

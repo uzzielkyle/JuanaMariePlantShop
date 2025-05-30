@@ -79,7 +79,7 @@ require_once './middleware/authMiddleware.php';
                                 <div class="col-12 col-sm-6 col-lg-3 product-card" data-category="${firstCategory}">
                                   <a href="product/product-page.php?id=${product.idproduct}" class="text-decoration-none text-dark">
                                     <div class="card h-100 border border-dark rounded-0 text-center">
-                                      <img src="${imageUrl}" class="card-img-top" alt="${product.name}">
+                                      <img src="${imageUrl}" class="card-img-top rounded-0" alt="${product.name}" style="width: 300.6; height: 2in; object-fit: cover;">
                                       <div class="card-body">
                                         <h5 class="card-title fw-bold">${product.name}</h5>
                                         <h5 class="card-title fw-light">P ${parseFloat(product.price).toFixed(2)}</h5>

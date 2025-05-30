@@ -55,13 +55,8 @@ function bindCartEvents() {
           method: "PUT",
           contentType: "application/json",
           data: JSON.stringify({ quantity: newQuantity }),
-          success: function () {
-            // Optionally show success or just silently update
-            // fetchCartItems(); // Uncomment if you want to refresh entire cart after update
-          },
-          error: function () {
-            alert("Failed to update quantity.");
-          },
+          success: function () {},
+          error: function () {},
         });
       }, 500);
     });
@@ -130,15 +125,18 @@ function renderCart(items) {
         <td>${price.toFixed(2)}</td>
         <td>
           <div class="col-sm-4">
-            <input type="number" class="form-control quantity" value="${item.quantity
-      }" min="1" max="99" step="1" data-price="${price}" data-id="${item.idcart
-      }">
+            <input type="number" class="form-control quantity" value="${
+              item.quantity
+            }" min="1" max="99" step="1" data-price="${price}" data-id="${
+      item.idcart
+    }">
           </div>
         </td>
         <td class="item-total">${total.toFixed(2)}</td>
         <td>
-          <button type="button" class="btn-close delete-btn" data-id="${item.idcart
-      }" aria-label="Close"></button>
+          <button type="button" class="btn-close delete-btn" data-id="${
+            item.idcart
+          }" aria-label="Close"></button>
         </td>
       </tr>
     `;
@@ -186,7 +184,7 @@ $("#checkoutBtn").on("click", function () {
   const shipping = parseFloat($("#shipping").text()) || 0;
   const total = subtotal + shipping;
 
-  console.log(selectedItems)
+  console.log(selectedItems);
 
   // Show spinner
   $btn.prop("disabled", true);
@@ -199,7 +197,7 @@ $("#checkoutBtn").on("click", function () {
     contentType: "application/json",
     data: JSON.stringify({
       items: selectedItems,
-      total_amount: total
+      total_amount: total,
     }),
     success: function () {
       alert("Checkout successful!");
@@ -216,7 +214,6 @@ $("#checkoutBtn").on("click", function () {
       $btn.prop("disabled", false);
       $spinner.addClass("d-none");
       $text.text("CHECKOUT");
-    }
+    },
   });
 });
-

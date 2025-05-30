@@ -152,7 +152,6 @@ $(document).ready(function () {
             success: function (loginResp) {
               localStorage.setItem('token', loginResp.token);
               document.cookie = `token=${loginResp.token}; path=/; SameSite=Lax;`;
-              alert('Registration successful!');
               window.location.href = '../user';
             },
             error: function () {
