@@ -54,7 +54,6 @@ $(document).ready(function () {
                 success: function (response) {
                     localStorage.setItem('token', response.token);
                     setTokenCookie(response.token);
-                    alert('Login successful as admin!');
                     window.location.href = '../index.php';
                 },
                 error: function (xhr) {
