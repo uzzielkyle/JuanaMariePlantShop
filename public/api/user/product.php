@@ -2,20 +2,40 @@
 header('Content-Type: application/json');
 require_once '../../config/db.php';
 require_once '../../middleware/authMiddleware.php';
-
-$auth = authenticate(["user"]); // get user data from JWT
-
-if (!$auth || $auth->role !== 'user') {
-    http_response_code(403);
-    echo json_encode(['error' => 'Unauthorized']);
-    exit;
-}
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 function respond($data, $code = 200)
 {
     http_response_code($code);
     echo json_encode($data);
     exit;
+}
+
+function cleanAndEncodeProducts($products) {
+    return array_map(function($product) {
+        $cleaned = [];
+        foreach ($product as $key => $value) {
+            $key = trim($key);
+            if ($key === 'photo' && !empty($value)) {
+                $value = base64_encode($value);
+            }
+            $cleaned[$key] = $value;
+        }
+        return $cleaned;
+    }, $products);
+}
+
+function cleanAndEncodeProduct($product) {
+    $cleaned = [];
+    foreach ($product as $key => $value) {
+        $key = trim($key);
+        if ($key === 'photo' && !empty($value)) {
+            $value = base64_encode($value);
+        }
+        $cleaned[$key] = $value;
+    }
+    return $cleaned;
 }
 
 // GET all products with categories
@@ -30,6 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && !isset($_GET['id'])) {
         GROUP BY p.idproduct
     ");
     $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $products = cleanAndEncodeProducts($products);
     respond($products);
 }
 
@@ -46,9 +67,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
         GROUP BY p.idproduct
     ");
     $stmt->execute([$_GET['id']]);
-    $product = $stmt->fetch();
+    $product = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($product) {
+        $product = cleanAndEncodeProduct($product);
         respond($product);
     } else {
         respond(['error' => 'Product not found'], 404);

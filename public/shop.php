@@ -45,10 +45,11 @@ require_once './middleware/authMiddleware.php';
       const categorySet = new Set();
 
       $.ajax({
-        url: 'http://localhost/JuanaMariePlantShop/public/api/user/product.php',
+        url: './api/user/product.php',
         method: 'GET',
         success: function(products) {
           productList.empty();
+          categorySet.clear(); // Clear previous categories if needed
 
           products.forEach(product => {
             const categories = (product.categories || 'Uncategorized').split(',').map(c => c.trim());
@@ -58,35 +59,48 @@ require_once './middleware/authMiddleware.php';
             });
 
             const firstCategory = categories[0] || 'Uncategorized';
-            const imageUrl = product.photo ? product.photo : `https://via.placeholder.com/300x200?text=${encodeURIComponent(product.name)}`;
+
+            let imageUrl = '';
+            if (product.photo && product.photo.trim() !== '') {
+              const base64Image = product.photo;
+              const imageMimeType = "image/jpeg";
+              imageUrl = `data:${imageMimeType};base64,${base64Image}`;
+            } else {
+              imageUrl = `https://placehold.jp/c0c0c0/ffffff/600x400.png?text=${encodeURIComponent(product.name)}`;
+            }
 
             const productCard = `
-              <div class="col-12 col-sm-6 col-lg-3 product-card" data-category="${firstCategory}">
-                <a href="product/product-page.php?id=${product.idproduct}" class="text-decoration-none text-dark">
-                  <div class="card h-100 border border-dark rounded-0 text-center">
-                    <img src="${imageUrl}" class="card-img-top" alt="${product.name}">
-                    <div class="card-body">
-                      <h5 class="card-title fw-bold">${product.name}</h5>
-                      <h5 class="card-title fw-light">P ${parseFloat(product.price).toFixed(2)}</h5>
-                    </div>
-                  </div>
-                </a>
-              </div>
-            `;
+                                <div class="col-12 col-sm-6 col-lg-3 product-card" data-category="${firstCategory}">
+                                  <a href="product/product-page.php?id=${product.idproduct}" class="text-decoration-none text-dark">
+                                    <div class="card h-100 border border-dark rounded-0 text-center">
+                                      <img src="${imageUrl}" class="card-img-top" alt="${product.name}">
+                                      <div class="card-body">
+                                        <h5 class="card-title fw-bold">${product.name}</h5>
+                                        <h5 class="card-title fw-light">P ${parseFloat(product.price).toFixed(2)}</h5>
+                                      </div>
+                                    </div>
+                                  </a>
+                                </div>
+                              `;
             productList.append(productCard);
           });
 
           // Build dynamic category buttons
+          categoryButtons.empty(); // Clear old buttons if needed
           categoryButtons.append(`<button class="btn btn-outline-dark me-2 category-btn" data-category="All">All</button>`);
           [...categorySet].sort().forEach(category => {
             categoryButtons.append(`
-              <button class="btn btn-outline-dark me-2 category-btn" data-category="${category}">
-                ${category}
-              </button>
-            `);
+                                    <button class="btn btn-outline-dark me-2 category-btn" data-category="${category}">
+                                      ${category}
+                                    </button>
+                                  `);
           });
         },
-        error: function() {
+        error: function(jqXHR, textStatus, errorThrown) {
+          console.error('XHR object:', jqXHR); // Logs the full XHR object
+          console.error('Status:', textStatus);
+          console.error('Error thrown:', errorThrown);
+
           productList.html('<p class="text-danger">Failed to load products. Please try again later.</p>');
         }
       });
