@@ -97,9 +97,9 @@ require_once './middleware/authMiddleware.php';
             </div>
             <div class="col-10">
               <h2 class="fw-bold">LOCATIONS</h2>
-              <p>Lorem ipsum dolor sit amet</p>
-              <p>Lorem ipsum dolor sit amet</p>
-              <p>Lorem ipsum dolor sit amet</p>
+              <p>Puerto Princesa City, Palawan</p>
+              <p>Sta. Maria, Bulacan</p>
+              <p>Zamboanga City, Zamboanga</p>
             </div>
           </div>
           <div class="row">
@@ -111,8 +111,7 @@ require_once './middleware/authMiddleware.php';
             </div>
             <div class="col-10">
               <h2 class="fw-bold">EMAIL</h2>
-              <p>Lorem ipsum dolor sit amet</p>
-              <p>Lorem ipsum dolor sit amet</p>
+              <p>help@juanamarie.com</p>
             </div>
           </div>
           <div class="row">
@@ -123,8 +122,7 @@ require_once './middleware/authMiddleware.php';
             </div>
             <div class="col-10">
               <h2 class="fw-bold">PHONE</h2>
-              <p>Lorem ipsum dolor sit amet</p>
-              <p>Lorem ipsum dolor sit amet</p>
+              <p>0912-231-4832</p>
             </div>
           </div>
         </div>
