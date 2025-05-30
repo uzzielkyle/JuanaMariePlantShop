@@ -66,7 +66,7 @@ $topItems = $stmt->fetchAll();
     <?php include 'includes/sidebar.php'; ?>
 
     <!-- Page Content -->
-    <div class="flex-grow-1 p-4">
+    <div class="flex-grow-1 p-4" style="height: 100vh; overflow-y: auto;">
       <div class="container-fluid">
         <h1 class="fw-bold">DASHBOARD</h1>
         <div class="container pt-5">

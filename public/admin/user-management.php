@@ -29,7 +29,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <div class="d-flex">
     <?php include 'includes/sidebar.php'; ?>
 
-    <div class="flex-grow-1 p-4">
+    <div class="flex-grow-1 p-4" style="height: 100vh; overflow-y: auto;">
       <div class="container-fluid">
         <h1 class="fw-bold">USERS</h1>
         <div class="table-responsive px-5">

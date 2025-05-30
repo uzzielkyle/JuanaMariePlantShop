@@ -50,7 +50,7 @@ $products = $stmt->fetchAll();
   <div class="d-flex">
     <?php include 'includes/sidebar.php'; ?>
 
-    <div class="flex-grow-1 p-4">
+    <div class="flex-grow-1 p-4" style="height: 100vh; overflow-y: auto;"> 
       <div class="container-fluid">
         <h1 class="fw-bold">PRODUCTS</h1>
         <div class="table-responsive ps-5 ms-5">

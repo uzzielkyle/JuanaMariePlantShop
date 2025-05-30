@@ -60,7 +60,7 @@ $categories = $stmt->fetchAll();
   <div class="d-flex">
     <?php include 'includes/sidebar.php'; ?>
 
-    <div class="flex-grow-1 p-4">
+    <div class="flex-grow-1 p-4" style="height: 100vh; overflow-y: auto;">
       <div class="container-fluid">
         <div class="d-flex justify-content-between align-items-center mb-4">
           <h1 class="fw-bold">Categories</h1>
