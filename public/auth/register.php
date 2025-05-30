@@ -17,7 +17,8 @@ if ($auth) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JUANA MARIE - Register</title>
+  <title>Register - Juana Marie</title>
+  <link rel="icon" href="../assets/logo.svg" type="image/svg+xml" />
   <link
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css"
     rel="stylesheet"

@@ -23,7 +23,8 @@ $productId = (int) $_GET['id'];
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>JUANA MARIE - Product Details</title>
+  <title>Product Details - Juana Marie</title>
+  <link rel="icon" href="../assets/logo.svg" type="image/svg+xml" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
   <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>

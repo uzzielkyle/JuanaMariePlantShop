@@ -15,7 +15,8 @@ if (!$auth || $auth->role !== 'user') {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My Cart</title>
+  <title>My Cart - Juana Marie</title>
+  <link rel="icon" href="../assets/logo.svg" type="image/svg+xml" />
   <link
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css"
     rel="stylesheet"
@@ -128,7 +129,7 @@ if (!$auth || $auth->role !== 'user') {
   </section>
 
   <?php include_once '../includes/partials/footer.php'; ?>
-  
+
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="js/cart-function.js"></script>
   <script src="../js/dynamic-nav.js"></script>

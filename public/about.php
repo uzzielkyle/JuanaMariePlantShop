@@ -9,7 +9,8 @@ require_once './middleware/authMiddleware.php';
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>About Us</title>
+  <title>About Us - Juana Marie</title>
+  <link rel="icon" href="./assets/logo.svg" type="image/svg+xml" />
   <link
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css"
     rel="stylesheet"
@@ -70,7 +71,7 @@ require_once './middleware/authMiddleware.php';
   </section>
 
   <?php include_once './includes/partials/footer.php'; ?>
-  
+
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="js/dynamic-nav.js"></script>
 </body>
