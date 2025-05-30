@@ -69,18 +69,21 @@ $categories = $stmt->fetchAll();
           </button>
         </div>
 
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4 mb-5">
+        <div class="mb-4 d-flex flex-wrap gap-3">
           <?php foreach ($categories as $category): ?>
-            <div class="col">
-              <div class="card h-100 border-dark">
-                <div class="card-body text-center">
-                  <h5 class="card-title fw-bold"><?= htmlspecialchars($category['name']) ?></h5>
-                  <button class="btn btn-sm btn-warning rounded-pill text-black fw-bold border-0" data-bs-toggle="modal"
-                          data-bs-target="#editCategoryModal<?= $category['idcategory'] ?>">Edit</button>
-                  <a href="?delete=<?= $category['idcategory'] ?>" class="btn btn-sm btn-danger rounded-pill text-white fw-bold border-0"
-                     onclick="return confirm('Are you sure you want to delete this category?')">Delete</a>
-                </div>
-              </div>
+            <div class="d-inline-flex align-items-center bg-light border rounded-pill px-4 py-2" style="font-size: 1.25rem;">
+              <span class="fw-semibold me-4"><?= htmlspecialchars($category['name']) ?></span>
+
+              <!-- Edit -->
+              <button class="btn btn-link p-0 text-warning fs-4" data-bs-toggle="modal" data-bs-target="#editCategoryModal<?= $category['idcategory'] ?>" aria-label="Edit">
+                <i class="bi bi-pencil-fill me-2"></i>
+              </button>
+
+              <!-- Delete -->
+              <a href="?delete=<?= $category['idcategory'] ?>" class="btn btn-link p-0 text-danger fs-4" aria-label="Delete"
+                onclick="return confirm('Are you sure you want to delete this category?')">
+                <i class="bi bi-trash-fill"></i>
+              </a>
             </div>
 
             <!-- Edit Modal -->
