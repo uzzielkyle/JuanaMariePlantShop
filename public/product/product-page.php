@@ -27,7 +27,6 @@ $productId = (int) $_GET['id'];
   <link rel="icon" href="../assets/logo.svg" type="image/svg+xml" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
-  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 </head>
 
 <body>
@@ -36,7 +35,7 @@ $productId = (int) $_GET['id'];
   <section class="container py-5 mt-5">
     <div class="row">
       <div class="col text-center">
-        <img id="product-image" src="assets/plant-default.png" alt="Product Image" style="width: 500px; height: auto" />
+        <div><img id="product-image" src="" alt="Product Image" style="width: 500px; height: auto; display: none;" /></div>
       </div>
       <div class="col border-bottom border-secondary border-3 pb-3">
         <h3 class="fw-bold" id="product-name">Loading...</h3>
@@ -167,8 +166,12 @@ $productId = (int) $_GET['id'];
           $("#product-care-guide").text(product.care_guide || "No care guide available.");
           $("#product-propagation").text(product.propagation || "No propagation info available.");
 
-          // Optional: Update image src if available
-          // $("#product-image").attr("src", product.photo_url || "assets/plant-default.png");
+          const imageUrl = product.photo ?
+            "data:image/jpeg;base64," + product.photo :
+            "assets/plant-default.png";
+
+          $("#product-image").attr("src", imageUrl).fadeIn();
+
         },
         error: function() {
           alert("Failed to load product data.");
