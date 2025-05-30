@@ -113,10 +113,12 @@ if (!$auth || $auth->role !== 'user') {
 
             <div class="text-center py-5">
               <button
-                type="submit"
+                id="checkoutBtn"
+                type="button"
                 class="viewButton btn btn-primary px-5 rounded-pill text-black fw-bold border-0"
                 style="background-color: #cff3d7">
-                CHECKOUT
+                <span class="spinner-border spinner-border-sm d-none me-2" id="checkoutSpinner" role="status" aria-hidden="true"></span>
+                <span id="checkoutText">CHECKOUT</span>
               </button>
             </div>
           </div>

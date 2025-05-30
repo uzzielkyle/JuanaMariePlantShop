@@ -16,7 +16,7 @@ $userId = $auth->id;
 // GET all cart items for the logged-in user
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && !isset($_GET['id'])) {
     $stmt = $pdo->prepare("
-        SELECT c.idcart, c.user, p.name, p.price, c.quantity
+        SELECT c.idcart, c.user, c.product AS product_id, p.name, p.price, c.quantity
         FROM cart c
         INNER JOIN `user` u ON u.iduser = c.user
         INNER JOIN product p ON p.idproduct = c.product

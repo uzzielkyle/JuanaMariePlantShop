@@ -122,7 +122,7 @@ function renderCart(items) {
     subtotal += total;
 
     const row = `
-      <tr>
+      <tr data-product-id=${item.product_id}>
         <td class="text-center">
           <input type="checkbox" class="item-check" checked style="transform: scale(1.5);">
         </td>
@@ -130,18 +130,15 @@ function renderCart(items) {
         <td>${price.toFixed(2)}</td>
         <td>
           <div class="col-sm-4">
-            <input type="number" class="form-control quantity" value="${
-              item.quantity
-            }" min="1" max="99" step="1" data-price="${price}" data-id="${
-      item.idcart
-    }">
+            <input type="number" class="form-control quantity" value="${item.quantity
+      }" min="1" max="99" step="1" data-price="${price}" data-id="${item.idcart
+      }">
           </div>
         </td>
         <td class="item-total">${total.toFixed(2)}</td>
         <td>
-          <button type="button" class="btn-close delete-btn" data-id="${
-            item.idcart
-          }" aria-label="Close"></button>
+          <button type="button" class="btn-close delete-btn" data-id="${item.idcart
+      }" aria-label="Close"></button>
         </td>
       </tr>
     `;
@@ -159,3 +156,67 @@ function renderCart(items) {
 $(document).ready(function () {
   fetchCartItems();
 });
+
+$("#checkoutBtn").on("click", function () {
+  const $btn = $(this);
+  const $spinner = $("#checkoutSpinner");
+  const $text = $("#checkoutText");
+
+  const selectedItems = {};
+  let subtotal = 0;
+
+  $("#cart-table-body tr").each(function () {
+    const checkbox = $(this).find(".item-check");
+    if (checkbox.prop("checked")) {
+      const quantityInput = $(this).find(".quantity");
+      const productId = $(this).data("product-id");
+      const quantity = parseInt(quantityInput.val());
+      const price = parseFloat(quantityInput.data("price"));
+
+      selectedItems[productId] = quantity;
+      subtotal += quantity * price;
+    }
+  });
+
+  if (Object.keys(selectedItems).length === 0) {
+    alert("Please select at least one item to checkout.");
+    return;
+  }
+
+  const shipping = parseFloat($("#shipping").text()) || 0;
+  const total = subtotal + shipping;
+
+  console.log(selectedItems)
+
+  // Show spinner
+  $btn.prop("disabled", true);
+  $spinner.removeClass("d-none");
+  $text.text("Processing...");
+
+  $.ajax({
+    url: "../api/user/order.php",
+    method: "POST",
+    contentType: "application/json",
+    data: JSON.stringify({
+      items: selectedItems,
+      total_amount: total
+    }),
+    success: function () {
+      alert("Checkout successful!");
+      setTimeout(function () {
+        window.location.href = "thank-page.php";
+      }, 500);
+    },
+    error: function (xhr) {
+      console.error(xhr.responseText);
+      alert("Checkout failed.");
+    },
+    complete: function () {
+      // Hide spinner and restore button
+      $btn.prop("disabled", false);
+      $spinner.addClass("d-none");
+      $text.text("CHECKOUT");
+    }
+  });
+});
+

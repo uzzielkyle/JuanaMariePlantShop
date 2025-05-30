@@ -4,8 +4,8 @@ require_once '../middleware/authMiddleware.php';
 $auth = authenticate(["user"], true); // get user data from JWT
 
 if (!$auth || $auth->role !== 'user') {
-    header('Location: ../auth/login.php');
-    exit;
+  header('Location: ../auth/login.php');
+  exit;
 }
 ?>
 
@@ -49,7 +49,9 @@ if (!$auth || $auth->role !== 'user') {
         notification with your order details
       </p>
 
-      <a href="" style="color: #cff3d7;">Go back to shopping</a>
+      <a href="../shop.php" class="text-success fw-bold text-decoration-underline">
+        Go back to shopping
+      </a>
     </div>
   </section>
 

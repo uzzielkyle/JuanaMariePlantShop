@@ -1,116 +1,107 @@
 <?php
-header('Content-Type: application/json');
+header("Content-Type: application/json");
 require_once '../../config/db.php';
 require_once '../../middleware/authMiddleware.php';
 
-function respond($data, $code = 200) {
-    http_response_code($code);
-    echo json_encode($data);
-    exit;
-}
+$auth = authenticate(["user"]);
+$user_id = $auth->id;
 
-$auth = authenticate(['user']);
-if (!$auth) {
-    respond(['error' => 'Unauthorized'], 403);
-}
+$method = $_SERVER['REQUEST_METHOD'];
 
-$userId = $auth->id;
-
-// GET all user's orders with items and products
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && !isset($_GET['id'])) {
-    $stmt = $pdo->prepare("SELECT * FROM order_details WHERE user = ?");
-    $stmt->execute([$userId]);
-    $orders = $stmt->fetchAll();
-
-    foreach ($orders as &$order) {
-        $stmtItems = $pdo->prepare("
-            SELECT oi.idorder_items, oi.products AS product_id, p.name, p.price 
-            FROM order_items oi 
-            JOIN product p ON oi.products = p.idproduct 
-            WHERE oi.`order` = ?
-        ");
-        $stmtItems->execute([$order['idorder_details']]);
-        $order['items'] = $stmtItems->fetchAll();
-    }
-    respond($orders);
-}
-
-// GET specific user's order by id
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
-    $orderId = $_GET['id'];
-    $stmt = $pdo->prepare("SELECT * FROM order_details WHERE idorder_details = ? AND user = ?");
-    $stmt->execute([$orderId, $userId]);
-    $order = $stmt->fetch();
-
-    if (!$order) {
-        respond(['error' => 'Order not found'], 404);
-    }
-
-    $stmtItems = $pdo->prepare("
-        SELECT oi.idorder_items, oi.products AS product_id, p.name, p.price 
-        FROM order_items oi 
-        JOIN product p ON oi.products = p.idproduct 
-        WHERE oi.`order` = ?
-    ");
-    $stmtItems->execute([$orderId]);
-    $order['items'] = $stmtItems->fetchAll();
-
-    respond($order);
-}
-
-// POST create new order
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($method === 'POST') {
     $data = json_decode(file_get_contents("php://input"), true);
-    if (!isset($data['items']) || !is_array($data['items']) || count($data['items']) === 0) {
-        respond(['error' => 'Order items required'], 400);
+
+    if (!isset($data['items']) || !is_array($data['items']) || !isset($data['total_amount'])) {
+        http_response_code(400);
+        echo json_encode(["message" => "Invalid input."]);
+        exit();
     }
 
-    // Calculate total price from products and quantities
-    $total = 0;
-    foreach ($data['items'] as $item) {
-        if (!isset($item['product_id'])) {
-            respond(['error' => 'Product ID missing in order items'], 400);
+    $items = $data['items']; // array of [product_id => quantity]
+    $total_amount = $data['total_amount'];
+
+    try {
+        $pdo->beginTransaction();
+
+        // 1. Insert into order_details
+        $stmt = $pdo->prepare("INSERT INTO order_details (`user`, total) VALUES (?, ?)");
+        $stmt->execute([$user_id, $total_amount]);
+        $order_id = $pdo->lastInsertId();
+
+        // 2. Insert into order_items
+        $stmtItem = $pdo->prepare("INSERT INTO order_items (products, `order`) VALUES (?, ?)");
+        foreach ($items as $product_id => $qty) {
+            for ($i = 0; $i < $qty; $i++) {
+                $stmtItem->execute([$product_id, $order_id]);
+            }
+
+            // 3. Decrease product quantity
+            $pdo->prepare("UPDATE product SET quantity = quantity - ? WHERE idproduct = ?")
+                ->execute([$qty, $product_id]);
+
+            // 4. Remove from cart
+            $pdo->prepare("DELETE FROM cart WHERE user = ? AND product = ?")
+                ->execute([$user_id, $product_id]);
         }
-        $stmt = $pdo->prepare("SELECT price FROM product WHERE idproduct = ?");
-        $stmt->execute([$item['product_id']]);
-        $product = $stmt->fetch();
-        if (!$product) {
-            respond(['error' => 'Invalid product ID: ' . $item['product_id']], 400);
-        }
-        $quantity = isset($item['quantity']) ? (int)$item['quantity'] : 1;
-        $total += $product['price'] * $quantity;
+
+        // 5. Insert into payment_details
+        $stmtPay = $pdo->prepare("INSERT INTO payment_details (`order`, amount) VALUES (?, ?)");
+        $stmtPay->execute([$order_id, $total_amount]);
+        $payment_id = $pdo->lastInsertId();
+
+        // 6. Update order_details with payment ID
+        $pdo->prepare("UPDATE order_details SET payment = ? WHERE idorder_details = ?")
+            ->execute([$payment_id, $order_id]);
+
+        $pdo->commit();
+
+        echo json_encode([
+            "message" => "Checkout successful.",
+            "order_id" => $order_id,
+            "payment_id" => $payment_id
+        ]);
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        http_response_code(500);
+        echo json_encode(["message" => "Checkout failed.", "error" => $e->getMessage()]);
+    }
+} elseif ($method === 'GET') {
+    // Fetch orders for a user
+    if (!isset($_GET['user_id'])) {
+        http_response_code(400);
+        echo json_encode(["message" => "Missing user_id."]);
+        exit();
     }
 
-    // Insert order_details
-    $stmtOrder = $pdo->prepare("INSERT INTO order_details (`user`, total) VALUES (?, ?)");
-    $stmtOrder->execute([$userId, $total]);
-    $orderId = $pdo->lastInsertId();
+    $user_id = $_GET['user_id'];
 
-    // Insert order_items (note: here quantity is not saved since your order_items table doesn’t have it)
-    $stmtItem = $pdo->prepare("INSERT INTO order_items (products, `order`) VALUES (?, ?)");
-    foreach ($data['items'] as $item) {
-        $stmtItem->execute([$item['product_id'], $orderId]);
+    try {
+        $stmt = $pdo->prepare("
+            SELECT 
+                od.idorder_details AS order_id,
+                od.total,
+                pd.amount AS payment_amount,
+                GROUP_CONCAT(p.name SEPARATOR ', ') AS products
+            FROM order_details od
+            LEFT JOIN order_items oi ON oi.`order` = od.idorder_details
+            LEFT JOIN product p ON p.idproduct = oi.products
+            LEFT JOIN payment_details pd ON pd.`order` = od.idorder_details
+            WHERE od.user = ?
+            GROUP BY od.idorder_details
+            ORDER BY od.idorder_details DESC
+        ");
+        $stmt->execute([$user_id]);
+        $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        echo json_encode([
+            "message" => "Orders fetched successfully.",
+            "orders" => $orders
+        ]);
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(["message" => "Failed to fetch orders.", "error" => $e->getMessage()]);
     }
-
-    respond(['message' => 'Order created', 'order_id' => $orderId], 201);
+} else {
+    http_response_code(405);
+    echo json_encode(["message" => "Method not allowed."]);
 }
-
-// DELETE cancel user's order
-if ($_SERVER['REQUEST_METHOD'] === 'DELETE' && isset($_GET['id'])) {
-    $orderId = $_GET['id'];
-
-    // Check ownership
-    $stmtCheck = $pdo->prepare("SELECT * FROM order_details WHERE idorder_details = ? AND user = ?");
-    $stmtCheck->execute([$orderId, $userId]);
-    if (!$stmtCheck->fetch()) {
-        respond(['error' => 'Order not found or unauthorized'], 404);
-    }
-
-    // Delete order items and order
-    $pdo->prepare("DELETE FROM order_items WHERE `order` = ?")->execute([$orderId]);
-    $pdo->prepare("DELETE FROM order_details WHERE idorder_details = ?")->execute([$orderId]);
-
-    respond(['message' => 'Order cancelled']);
-}
-
-respond(['error' => 'Method not allowed'], 405);
