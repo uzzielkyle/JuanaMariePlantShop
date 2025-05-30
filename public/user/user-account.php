@@ -162,6 +162,9 @@ if (!$auth || $auth->role !== 'user') {
       </div>
     </div>
   </div>
+  </div>
+
+  <?php include_once '../includes/partials/footer.php'; ?>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="../js/dynamic-nav.js"></script>

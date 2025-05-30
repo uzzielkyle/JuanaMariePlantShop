@@ -126,6 +126,9 @@ $productId = (int) $_GET['id'];
       </div>
     </div>
   </div>
+
+  <?php include_once '../includes/partials/footer.php'; ?>
+
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="js/product-page.js">
   </script>

@@ -4,8 +4,8 @@ require_once '../middleware/authMiddleware.php';
 $auth = authenticate(["user"], true); // get user data from JWT
 
 if (!$auth || $auth->role !== 'user') {
-    header('Location: ../auth/login.php');
-    exit;
+  header('Location: ../auth/login.php');
+  exit;
 }
 ?>
 
@@ -145,6 +145,7 @@ if (!$auth || $auth->role !== 'user') {
     </div>
   </div>
 
+  <?php include_once '../includes/partials/footer.php'; ?>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
