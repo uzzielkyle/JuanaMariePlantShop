@@ -52,7 +52,7 @@ $products = $stmt->fetchAll();
 
     <div class="flex-grow-1 p-4" style="height: 100vh; overflow-y: auto;">
       <div class="container-fluid">
-        <h1 class="fw-bold">PRODUCTS</h1>
+        <h1 class="fw-bold">INVENTORY</h1>
         <div class="table-responsive ps-5 ms-5">
           <table class="table table-hover align-middle">
             <thead>
