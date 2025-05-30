@@ -30,7 +30,7 @@ if (!$auth || $auth->role !== 'user') {
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 
-<body>
+<body class="d-grid min-vh-100" style="grid-template-rows: 1fr auto;">
   <div class="px-5">
     <?php include_once __DIR__ . "/../includes/partials/header.php"; ?>
     <?php include_once "includes/user-nav.php"; ?>
