@@ -57,9 +57,20 @@ if (!$auth || $auth->role !== 'admin') {
           </div>
 
           <div class="modal-body">
-            <div class="mb-3">
-              <label for="newName" class="form-label">Plant Name <span class="text-danger">*</span></label>
-              <input type="text" class="form-control border-dark rounded-0" id="newName" name="name" required>
+            <div class="row">
+              <div class="col mb-3">
+                <label for="newName" class="form-label">Plant Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control border-dark rounded-0" id="newName" name="name" required>
+              </div>
+
+              <div class="col mb-3">
+                <label for="category" class="form-label">Category</label>
+                <select class="form-select border-dark rounded-0" id="newCategory" name="category">
+                  <option value="" disabled selected>Select a category</option>
+                  <!-- Categories will be populated here -->
+                </select>
+              </div>
+
             </div>
 
             <div class="mb-3">
@@ -134,10 +145,23 @@ if (!$auth || $auth->role !== 'admin') {
           <div class="modal-body">
             <!-- Your input fields same as add form, but with ids:
                name, price, sunlight, watering, difficulty, description, history, care, propagation -->
-            <div class="mb-3">
-              <label for="name" class="form-label">Plant Name <span class="text-danger">*</span></label>
-              <input type="text" class="form-control rounded-0 border-dark" id="name" name="name" required>
+            <div class="row">
+              <div class="col mb-3">
+                <label for="name" class="form-label">Plant Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control rounded-0 border-dark" id="name" name="name" required>
+              </div>
+
+              <div class="col mb-3">
+                <label for="category" class="form-label">Category</label>
+                <select class="form-select border-dark rounded-0" id="category" name="category">
+                  <option value="" disabled selected>Select a category</option>
+                  <!-- Categories will be populated here -->
+                </select>
+              </div>
+
+
             </div>
+
             <div class="mb-3">
               <label for="photo" class="form-label">Upload Photo</label>
               <input type="file" class="form-control border-dark rounded-0" id="photo" name="photo" accept="image/*">
