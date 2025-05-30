@@ -28,9 +28,10 @@ try {
             <div>
                 <h1 class="display-1 fw-bold text-white">JUANA MARIE</h1>
                 <h2 class="h1 fw-bold" style="color: #d1e7dd;">HERBAL PLANTS</h2>
-                <button class="btn bg-success-subtle rounded-pill mt-3 py-4 px-5 fw-bold">
+                <a href="shop.php" class="btn bg-success-subtle rounded-pill mt-3 py-4 px-5 fw-bold text-decoration-none">
                     SHOP NOW <i class="bi bi-arrow-right"></i>
-                </button>
+                </a>
+
             </div>
         </section>
 
