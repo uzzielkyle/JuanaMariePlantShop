@@ -14,7 +14,8 @@ if (!$auth || $auth->role !== 'admin') {
 
 <head>
   <meta charset="UTF-8" />
-  <title>Main Page with Sidebar</title>
+  <title>Manage Products - Juana Marie</title>
+  <link rel="icon" href="../assets/logo.svg" type="image/svg+xml" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
 </head>

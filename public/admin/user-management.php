@@ -18,7 +18,8 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <head>
   <meta charset="UTF-8" />
-  <title>User Management</title>
+  <title>User Management - Juana Marie</title>
+  <link rel="icon" href="../assets/logo.svg" type="image/svg+xml" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
