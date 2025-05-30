@@ -92,11 +92,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $productId = $pdo->lastInsertId();
 
-    if (isset($data['categories']) && is_array($data['categories'])) {
+    if (isset($data['category'])) {
         $stmtCat = $pdo->prepare("INSERT INTO product_has_category (product_idproduct, category_idcategory) VALUES (?, ?)");
-        foreach ($data['categories'] as $catId) {
-            $stmtCat->execute([$productId, $catId]);
-        }
+        $stmtCat->execute([$productId, $data['category']]);
     }
 
     respond(['message' => 'Product created', 'id' => $productId], 201);
