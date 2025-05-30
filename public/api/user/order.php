@@ -66,7 +66,50 @@ if ($method === 'POST') {
         echo json_encode(["message" => "Checkout failed.", "error" => $e->getMessage()]);
     }
 } elseif ($method === 'GET') {
-    // Fetch orders for a user
+
+    if (isset($_GET['order_id'])) {
+        $order_id = $_GET['order_id'];
+
+        try {
+            // 1. Get order items with quantities
+            $stmt = $pdo->prepare("
+                SELECT p.name, p.price, SUM(oi.quantity) as quantity
+                FROM order_items oi
+                LEFT JOIN product p ON oi.products = p.idproduct
+                WHERE oi.`order` = ?
+                GROUP BY oi.products
+            ");
+            $stmt->execute([$order_id]);
+            $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // 2. Get total price from payment_details for this order
+            $stmt2 = $pdo->prepare("
+            SELECT amount    
+            FROM payment_details 
+            WHERE `order` = ?
+            LIMIT 1
+        ");
+            $stmt2->execute([$order_id]);
+            $payment = $stmt2->fetch(PDO::FETCH_ASSOC);
+
+            $total_price = $payment ? $payment['amount'] : 0;
+
+            echo json_encode([
+                "message" => "Order items and total price fetched.",
+                "items" => $items,
+                "total_price" => $total_price
+            ]);
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode([
+                "message" => "Failed to fetch order details.",
+                "error" => $e->getMessage()
+            ]);
+        }
+        exit;
+    }
+
+    // 🎯 2. Get list of all user orders
     if (!isset($_GET['user_id'])) {
         http_response_code(400);
         echo json_encode(["message" => "Missing user_id."]);
