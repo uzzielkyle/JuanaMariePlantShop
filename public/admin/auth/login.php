@@ -36,10 +36,13 @@ if ($auth) {
   <main class="container p-3 mb-2 mt-5">
     <div class="row justify-content-center">
       <div class="col-md-6 pb-3 pt-5 px-5">
-        <div class="p-3 border border-dark">
+        <div class="p-3 border border-dark text-center">
+      
+          <img src="../../assets/logo.svg" alt="Logo" style="width: 80px; height: auto;" class="mb-3">
+
           <h2 class="text-center pb-3">Admin Login</h2>
           <form id="loginForm">
-            <div class="mb-3">
+            <div class="mb-3 text-start">
               <label for="loginIdentifier" class="form-label">
                 Email or Username<span class="text-danger">*</span>
               </label>
@@ -51,7 +54,7 @@ if ($auth) {
                 required>
             </div>
 
-            <div class="mb-3">
+            <div class="mb-3 text-start">
               <label for="loginPassword" class="form-label">
                 Password<span class="text-danger">*</span>
               </label>
@@ -79,14 +82,7 @@ if ($auth) {
   </main>
 
   <script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO"
-    crossorigin="anonymous"></script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/additional-methods.min.js"></script>
+    src="https://cdn.jsdelivr.net/npm/bootstra
 
-  <script src="./js/validation/login-form.js"></script>
-</body>
 
 </html>
