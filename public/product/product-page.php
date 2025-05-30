@@ -148,7 +148,15 @@ $productId = (int) $_GET['id'];
           if (Array.isArray(product)) {
             product = product[0];
           }
-
+          let imageUrl = '';
+          if (product.photo && product.photo.trim() !== '') {
+            const base64Image = product.photo;
+            const imageMimeType = "image/jpeg";
+            imageUrl = `data:${imageMimeType};base64,${base64Image}`;
+          } else {
+            imageUrl = "assets/plant-default.png";
+          }
+          $("#product-image").attr("src", imageUrl);
           $("#product-name").text(product.name || "No name");
           $("#product-price").text("P " + (parseFloat(product.price).toFixed(2) || "0.00"));
           $("#product-sunlight").text(product.sunlight || "N/A");

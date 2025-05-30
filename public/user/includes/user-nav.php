@@ -4,8 +4,8 @@
     <ul class="navbar-nav">
       <li class="nav-item">
         <a
-          class="nav-link active fw-bold px-4 mx-2 rounded-pill bg-success-subtle"
-          href="#">My Orders</a>
+          class="nav-link px-4 mx-2"
+          href="/JuanaMariePlantShop/public/user/index.php">My Orders</a>
       </li>
       <li class="nav-item">
         <a class="nav-link px-4 mx-2" href="/JuanaMariePlantShop/public/user/user-account.php">My Account</a>
