@@ -4,32 +4,32 @@ require_once '../config/db.php';  // Add your DB connection
 
 $auth = authenticate(["admin"], true); // get admin data from JWT
 if (!$auth || $auth->role !== 'admin') {
-    header('Location: ./auth/login.php');
-    exit;
+  header('Location: ./auth/login.php');
+  exit;
 }
 
 // Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['update_quantity'])) {
-        $productId = intval($_POST['product_id']);
-        $newQty = intval($_POST['quantity']);
-        $stmt = $pdo->prepare("UPDATE product SET quantity = :quantity WHERE idproduct = :id");
-        $stmt->execute(['quantity' => $newQty, 'id' => $productId]);
-        header("Location: " . $_SERVER['PHP_SELF']); // redirect to avoid form resubmission
-        exit;
-    }
+  if (isset($_POST['update_quantity'])) {
+    $productId = intval($_POST['product_id']);
+    $newQty = intval($_POST['quantity']);
+    $stmt = $pdo->prepare("UPDATE product SET quantity = :quantity WHERE idproduct = :id");
+    $stmt->execute(['quantity' => $newQty, 'id' => $productId]);
+    header("Location: " . $_SERVER['PHP_SELF']); // redirect to avoid form resubmission
+    exit;
+  }
 
-    if (isset($_POST['delete_product'])) {
-        $productId = intval($_POST['product_id']);
-        $stmt = $pdo->prepare("DELETE FROM product WHERE idproduct = :id");
-        $stmt->execute(['id' => $productId]);
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit;
-    }
+  if (isset($_POST['delete_product'])) {
+    $productId = intval($_POST['product_id']);
+    $stmt = $pdo->prepare("DELETE FROM product WHERE idproduct = :id");
+    $stmt->execute(['id' => $productId]);
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
+  }
 }
 
 // Fetch products from DB
-$stmt = $pdo->query("SELECT idproduct, name, quantity FROM product ORDER BY name");
+$stmt = $pdo->query("SELECT idproduct, name, quantity, photo FROM product ORDER BY name");
 $products = $stmt->fetchAll();
 
 ?>
@@ -50,7 +50,7 @@ $products = $stmt->fetchAll();
   <div class="d-flex">
     <?php include 'includes/sidebar.php'; ?>
 
-    <div class="flex-grow-1 p-4" style="height: 100vh; overflow-y: auto;"> 
+    <div class="flex-grow-1 p-4" style="height: 100vh; overflow-y: auto;">
       <div class="container-fluid">
         <h1 class="fw-bold">PRODUCTS</h1>
         <div class="table-responsive ps-5 ms-5">
@@ -65,15 +65,33 @@ $products = $stmt->fetchAll();
             </thead>
             <tbody class="table-group-divider">
               <?php foreach ($products as $product):
-                $status = $product['quantity'] < 10 ? 'Low Stocks' : 'On Stocks';
-                $statusClass = $product['quantity'] < 10 ? 'text-danger fw-bold' : 'text-success fw-bold';
-                $icon = $product['quantity'] < 10
-                  ? '<i class="bi bi-caret-down-fill"></i>'
-                  : '<i class="bi bi-caret-up-fill"></i>';
+                $qty = $product['quantity'];
+                if ($qty == 0) {
+                  $status = 'Out of Stock';
+                  $statusClass = 'text-danger fw-bold';
+                  $icon = '<i class="bi bi-x-circle-fill"></i>';
+                } elseif ($qty > 0 && $qty < 10) {
+                  $status = 'Low Stock';
+                  $statusClass = 'text-warning fw-bold';
+                  $icon = '<i class="bi bi-exclamation-circle-fill"></i>';
+                } elseif ($qty >= 10 && $qty < 50) {
+                  $status = 'In Stock';
+                  $statusClass = 'text-success fw-bold';
+                  $icon = '<i class="bi bi-check-circle-fill"></i>';
+                } else {
+                  $status = 'Overstock';
+                  $statusClass = 'text-info fw-bold';
+                  $icon = '<i class="bi bi-box-seam"></i>';
+                }
+
+
+                $imageSrc = $product['photo']
+                  ? 'data:image/jpeg;base64,' . base64_encode($product['photo'])
+                  : 'https://placehold.jp/c0c0c0/ffffff/40x40.png?text=' . urlencode($product['name']);
               ?>
                 <tr>
                   <td>
-                    <img src="assets/default.jpg" class="img-fluid rounded-circle me-2" style="width: 40px; height: 40px" />
+                    <img src="<?= $imageSrc ?>" class="img-fluid rounded-circle me-2" style="width: 40px; height: 40px" />
                     <?= htmlspecialchars($product['name']) ?>
                   </td>
                   <td class="<?= $statusClass ?>"><?= $status ?> <?= $icon ?></td>
@@ -87,8 +105,7 @@ $products = $stmt->fetchAll();
                         value="<?= $product['quantity'] ?>"
                         min="0"
                         max="9999"
-                        step="1"
-                      />
+                        step="1" />
                       <button type="submit" name="update_quantity" class="btn btn-primary btn-sm rounded-pill">UPDATE</button>
                     </form>
                   </td>
@@ -100,7 +117,6 @@ $products = $stmt->fetchAll();
                   </td>
                 </tr>
               <?php endforeach; ?>
-
               <?php if (empty($products)): ?>
                 <tr>
                   <td colspan="4" class="text-center">No products found.</td>
