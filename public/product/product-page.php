@@ -1,6 +1,13 @@
 <?php
 require_once '../middleware/authMiddleware.php';
 
+$auth = authenticate(["user"], true); // get user data from JWT
+
+if (!$auth || $auth->role !== 'user') {
+  header('Location: ../auth/login.php');
+  exit;
+}
+
 // Just check if id is provided in the URL
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
   http_response_code(400);
