@@ -29,6 +29,11 @@ require_once './middleware/authMiddleware.php';
 
       <!-- Product Grid -->
       <div class="row g-4" id="product-list">
+        <div class="text-center w-100 my-5" id="loading-spinner">
+          <div class="spinner-border text-success" role="status" style="width: 3rem; height: 3rem;">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
         <!-- Products will be injected here dynamically -->
       </div>
     </section>
