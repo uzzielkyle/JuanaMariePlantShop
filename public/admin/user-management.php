@@ -32,44 +32,54 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="flex-grow-1 p-4" style="height: 100vh; overflow-y: auto;">
       <div class="container-fluid">
         <h1 class="fw-bold">USERS</h1>
-        <div class="table-responsive px-5">
-          <table class="table table-hover align-middle">
-            <thead>
-              <tr>
-                <th>Full Name</th>
+        <div class="table-responsive px-3 pt-3">
+          <table class="table table-hover align-middle table-striped table-borderless">
+            <thead class="table-light">
+              <tr class="text-uppercase text-muted small">
+                <th colspan="2">Profile</th>
                 <th>Email</th>
                 <th>Address</th>
-                <th>Telephone No.</th>
-                <th>Created At</th>
-                <th>Modified At</th>
-                <th></th>
+                <th>Telephone</th>
+                <th colspan="2">Created</th>
+                <th class="text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
               <?php if (empty($users)) : ?>
-                <tr>
-                  <td colspan="7" class="text-center">No users found</td>
+                <tr style="height: 60px;">
+                  <td colspan="6" class="text-center text-muted align-middle small">No users found.</td>
                 </tr>
               <?php else : ?>
-                <?php foreach ($users as $user) : ?>
-                  <tr>
-                    <td>
-                      <?= htmlspecialchars($user['last_name'] . ', ' . $user['first_name']) ?>
+                <?php foreach ($users as $user) :
+                  $fullName = $user['first_name'] . ' ' . $user['last_name'];
+                  $initials = strtoupper(substr($user['first_name'], 0, 1) . substr($user['last_name'], 0, 1));
+                ?>
+                  <tr class="align-middle small" style="height: 60px;">
+                    <td colspan="2">
+                      <div class="d-flex align-items-center gap-2">
+                        <div class="rounded-circle bg-secondary text-white d-flex justify-content-center align-items-center" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                          <?= $initials ?>
+                        </div>
+                        <div>
+                          <div class="fw-semibold small"><?= htmlspecialchars($fullName) ?></div>
+                          <small class="text-muted">ID: <?= $user['iduser'] ?></small>
+                        </div>
+                      </div>
                     </td>
                     <td><?= htmlspecialchars($user['email']) ?></td>
-                    <td><?= htmlspecialchars($user['address']) ?></td>
-                    <td><?= htmlspecialchars($user['telephone']) ?></td>
-                    <td><?= htmlspecialchars($user['created_at']) ?></td>
-                    <td><?= htmlspecialchars($user['modified_at']) ?></td>
-                    <td>
-                      <button
-                        class="btn btn-primary btn-view rounded-pill text-white fw-bold border-0"
+                    <td><?= htmlspecialchars($user['address']) ?: '<span class="text-muted fst-italic">N/A</span>' ?></td>
+                    <td><?= htmlspecialchars($user['telephone']) ?: '<span class="text-muted fst-italic">N/A</span>' ?></td>
+                    <td><small class="text-muted"><?= date('M d, Y h:i A', strtotime($user['created_at'])) ?></small></td>
+                    <td colspan="2" class="text-center">
+                      <button class="btn btn-sm btn-outline-primary btn-view rounded-pill px-3 py-1 fw-semibold"
                         data-id="<?= $user['iduser'] ?>"
                         data-first_name="<?= htmlspecialchars($user['first_name']) ?>"
                         data-last_name="<?= htmlspecialchars($user['last_name']) ?>"
                         data-email="<?= htmlspecialchars($user['email']) ?>"
                         data-address="<?= htmlspecialchars($user['address']) ?>"
-                        data-telephone="<?= htmlspecialchars($user['telephone']) ?>">VIEW</button>
+                        data-telephone="<?= htmlspecialchars($user['telephone']) ?>">
+                        <i class="bi bi-person-lines-fill me-1"></i> View
+                      </button>
                     </td>
                   </tr>
                 <?php endforeach; ?>
@@ -110,14 +120,6 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
           <div class="col-md-12">
             <label for="address" class="form-label">Address</label>
             <input type="text" id="address" name="address" class="form-control" />
-          </div>
-          <div class="col-md-6">
-            <label class="form-label">Created At</label>
-            <input type="text" id="createdAt" class="form-control" readonly />
-          </div>
-          <div class="col-md-6">
-            <label class="form-label">Modified At</label>
-            <input type="text" id="modifiedAt" class="form-control" readonly />
           </div>
         </div>
         <div class="modal-footer">

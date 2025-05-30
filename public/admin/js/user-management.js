@@ -10,8 +10,6 @@ $(function () {
         $('#address').val(btn.data('address'));
 
         const row = btn.closest('tr');
-        $('#createdAt').val(row.find('td:nth-child(5)').text());
-        $('#modifiedAt').val(row.find('td:nth-child(6)').text());
 
         $('#userModal').modal('show');
     });
