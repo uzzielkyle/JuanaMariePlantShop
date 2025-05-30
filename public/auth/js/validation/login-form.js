@@ -67,11 +67,8 @@ $(document).ready(function () {
         contentType: "application/json",
         data: JSON.stringify({ email, password }),
         success: function (response) {
-          alert(response);
           localStorage.setItem("token", response.token);
-          alert(response.user);
           setTokenCookie(response.token);
-          alert("Login successful as user!");
           window.location.href = "../user";
         },
         error: function () {
